@@ -1,0 +1,23 @@
+[package]
+name = "stake-for-fee"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "stake_for_fee"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+local = []
+
+[dependencies]
+anchor-lang = { version = "0.28.0", features = ["event-cpi", "init-if-needed"] }
+anchor-spl = "0.28.0"
+solana-program = ">=1.16.0"
+bytemuck = "1.18.0"

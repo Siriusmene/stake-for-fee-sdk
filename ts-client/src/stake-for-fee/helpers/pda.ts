@@ -1,0 +1,46 @@
+import { PublicKey } from "@solana/web3.js";
+
+export const deriveFeeVault = (pool: PublicKey, programId: PublicKey) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("vault"), pool.toBytes()],
+    programId
+  )[0];
+};
+
+export const deriveStakeTokenVault = (
+  vault: PublicKey,
+  programId: PublicKey
+) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("stake_vault"), vault.toBytes()],
+    programId
+  )[0];
+};
+
+export const deriveTopStakerList = (vault: PublicKey, programId: PublicKey) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("list"), vault.toBytes()],
+    programId
+  )[0];
+};
+
+export const deriveFullBalanceList = (
+  vault: PublicKey,
+  programId: PublicKey
+) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("balance"), vault.toBytes()],
+    programId
+  )[0];
+};
+
+export const deriveStakeEscrow = (
+  vault: PublicKey,
+  owner: PublicKey,
+  programId: PublicKey
+) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("escrow"), vault.toBytes(), owner.toBytes()],
+    programId
+  )[0];
+};
