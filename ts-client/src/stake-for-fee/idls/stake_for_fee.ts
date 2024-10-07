@@ -30,7 +30,7 @@ export type StakeForFee = {
           ]
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -38,7 +38,7 @@ export type StakeForFee = {
           ]
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -221,12 +221,12 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -347,22 +347,22 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "userTokenX",
+          "name": "userTokenA",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTokenY",
+          "name": "userTokenB",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -488,12 +488,12 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -635,12 +635,12 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -1023,27 +1023,27 @@ export type StakeForFee = {
             "type": "i64"
           },
           {
-            "name": "feeXClaimedAmount",
+            "name": "feeAClaimedAmount",
             "type": "u128"
           },
           {
-            "name": "feeYClaimedAmount",
+            "name": "feeBClaimedAmount",
             "type": "u128"
           },
           {
-            "name": "feeXPerLiquidityCheckpoint",
+            "name": "feeAPerLiquidityCheckpoint",
             "type": "u128"
           },
           {
-            "name": "feeYPerLiquidityCheckpoint",
+            "name": "feeBPerLiquidityCheckpoint",
             "type": "u128"
           },
           {
-            "name": "feeXPending",
+            "name": "feeAPending",
             "type": "u64"
           },
           {
-            "name": "feeYPending",
+            "name": "feeBPending",
             "type": "u64"
           },
           {
@@ -1140,14 +1140,14 @@ export type StakeForFee = {
             "type": "publicKey"
           },
           {
-            "name": "tokenXVault",
+            "name": "tokenAVault",
             "docs": [
               "Token x vault"
             ],
             "type": "publicKey"
           },
           {
-            "name": "tokenYVault",
+            "name": "tokenBVault",
             "docs": [
               "Token y vault"
             ],
@@ -1365,14 +1365,14 @@ export type StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "totalFeeXAmount",
+            "name": "totalFeeAAmount",
             "docs": [
               "Fee x amount"
             ],
             "type": "u64"
           },
           {
-            "name": "totalFeeYAmount",
+            "name": "totalFeeBAmount",
             "docs": [
               "Fee y amount"
             ],
@@ -1436,14 +1436,14 @@ export type StakeForFee = {
             "type": "i64"
           },
           {
-            "name": "lockedFeeX",
+            "name": "lockedFeeA",
             "docs": [
               "Locked fee x"
             ],
             "type": "u64"
           },
           {
-            "name": "lockedFeeY",
+            "name": "lockedFeeB",
             "docs": [
               "Locked fee y"
             ],
@@ -1457,14 +1457,14 @@ export type StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "cumulativeFeeXPerLiquidity",
+            "name": "cumulativeFeeAPerLiquidity",
             "docs": [
               "cumulative fee x per liquidity"
             ],
             "type": "u128"
           },
           {
-            "name": "cumulativeFeeYPerLiquidity",
+            "name": "cumulativeFeeBPerLiquidity",
             "docs": [
               "cumulative fee y per liquidity"
             ],
@@ -1624,22 +1624,22 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
@@ -1694,22 +1694,22 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
@@ -1774,22 +1774,22 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXAmount",
+          "name": "feeAAmount",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYAmount",
+          "name": "feeBAmount",
           "type": "u64",
           "index": false
         },
         {
-          "name": "totalFeeXAmount",
+          "name": "totalFeeAAmount",
           "type": "u128",
           "index": false
         },
         {
-          "name": "totalFeeYAmount",
+          "name": "totalFeeBAmount",
           "type": "u128",
           "index": false
         }
@@ -1809,32 +1809,32 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "tokenXClaimed",
+          "name": "tokenAClaimed",
           "type": "u64",
           "index": false
         },
         {
-          "name": "tokenYClaimed",
+          "name": "tokenBClaimed",
           "type": "u64",
           "index": false
         },
         {
-          "name": "tokenXReleased",
+          "name": "tokenAReleased",
           "type": "u64",
           "index": false
         },
         {
-          "name": "tokenYReleased",
+          "name": "tokenBReleased",
           "type": "u64",
           "index": false
         },
         {
-          "name": "cumulativeFeeXPerLiquidity",
+          "name": "cumulativeFeeAPerLiquidity",
           "type": "u128",
           "index": false
         },
         {
-          "name": "cumulativeFeeYPerLiquidity",
+          "name": "cumulativeFeeBPerLiquidity",
           "type": "u128",
           "index": false
         },
@@ -1869,22 +1869,22 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
@@ -1914,22 +1914,22 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
@@ -1964,22 +1964,22 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
@@ -2122,7 +2122,7 @@ export const IDL: StakeForFee = {
           ]
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2130,7 +2130,7 @@ export const IDL: StakeForFee = {
           ]
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2313,12 +2313,12 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -2439,22 +2439,22 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "userTokenX",
+          "name": "userTokenA",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTokenY",
+          "name": "userTokenB",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -2580,12 +2580,12 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -2727,12 +2727,12 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenXVault",
+          "name": "tokenAVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenYVault",
+          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -3115,27 +3115,27 @@ export const IDL: StakeForFee = {
             "type": "i64"
           },
           {
-            "name": "feeXClaimedAmount",
+            "name": "feeAClaimedAmount",
             "type": "u128"
           },
           {
-            "name": "feeYClaimedAmount",
+            "name": "feeBClaimedAmount",
             "type": "u128"
           },
           {
-            "name": "feeXPerLiquidityCheckpoint",
+            "name": "feeAPerLiquidityCheckpoint",
             "type": "u128"
           },
           {
-            "name": "feeYPerLiquidityCheckpoint",
+            "name": "feeBPerLiquidityCheckpoint",
             "type": "u128"
           },
           {
-            "name": "feeXPending",
+            "name": "feeAPending",
             "type": "u64"
           },
           {
-            "name": "feeYPending",
+            "name": "feeBPending",
             "type": "u64"
           },
           {
@@ -3232,14 +3232,14 @@ export const IDL: StakeForFee = {
             "type": "publicKey"
           },
           {
-            "name": "tokenXVault",
+            "name": "tokenAVault",
             "docs": [
               "Token x vault"
             ],
             "type": "publicKey"
           },
           {
-            "name": "tokenYVault",
+            "name": "tokenBVault",
             "docs": [
               "Token y vault"
             ],
@@ -3457,14 +3457,14 @@ export const IDL: StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "totalFeeXAmount",
+            "name": "totalFeeAAmount",
             "docs": [
               "Fee x amount"
             ],
             "type": "u64"
           },
           {
-            "name": "totalFeeYAmount",
+            "name": "totalFeeBAmount",
             "docs": [
               "Fee y amount"
             ],
@@ -3528,14 +3528,14 @@ export const IDL: StakeForFee = {
             "type": "i64"
           },
           {
-            "name": "lockedFeeX",
+            "name": "lockedFeeA",
             "docs": [
               "Locked fee x"
             ],
             "type": "u64"
           },
           {
-            "name": "lockedFeeY",
+            "name": "lockedFeeB",
             "docs": [
               "Locked fee y"
             ],
@@ -3549,14 +3549,14 @@ export const IDL: StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "cumulativeFeeXPerLiquidity",
+            "name": "cumulativeFeeAPerLiquidity",
             "docs": [
               "cumulative fee x per liquidity"
             ],
             "type": "u128"
           },
           {
-            "name": "cumulativeFeeYPerLiquidity",
+            "name": "cumulativeFeeBPerLiquidity",
             "docs": [
               "cumulative fee y per liquidity"
             ],
@@ -3716,22 +3716,22 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
@@ -3786,22 +3786,22 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
@@ -3866,22 +3866,22 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXAmount",
+          "name": "feeAAmount",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYAmount",
+          "name": "feeBAmount",
           "type": "u64",
           "index": false
         },
         {
-          "name": "totalFeeXAmount",
+          "name": "totalFeeAAmount",
           "type": "u128",
           "index": false
         },
         {
-          "name": "totalFeeYAmount",
+          "name": "totalFeeBAmount",
           "type": "u128",
           "index": false
         }
@@ -3901,32 +3901,32 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "tokenXClaimed",
+          "name": "tokenAClaimed",
           "type": "u64",
           "index": false
         },
         {
-          "name": "tokenYClaimed",
+          "name": "tokenBClaimed",
           "type": "u64",
           "index": false
         },
         {
-          "name": "tokenXReleased",
+          "name": "tokenAReleased",
           "type": "u64",
           "index": false
         },
         {
-          "name": "tokenYReleased",
+          "name": "tokenBReleased",
           "type": "u64",
           "index": false
         },
         {
-          "name": "cumulativeFeeXPerLiquidity",
+          "name": "cumulativeFeeAPerLiquidity",
           "type": "u128",
           "index": false
         },
         {
-          "name": "cumulativeFeeYPerLiquidity",
+          "name": "cumulativeFeeBPerLiquidity",
           "type": "u128",
           "index": false
         },
@@ -3961,22 +3961,22 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
@@ -4006,22 +4006,22 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
@@ -4056,22 +4056,22 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "feeXPending",
+          "name": "feeAPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeYPending",
+          "name": "feeBPending",
           "type": "u64",
           "index": false
         },
         {
-          "name": "feeXPerLiquidityCheckpoint",
+          "name": "feeAPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         },
         {
-          "name": "feeYPerLiquidityCheckpoint",
+          "name": "feeBPerLiquidityCheckpoint",
           "type": "u128",
           "index": false
         }
