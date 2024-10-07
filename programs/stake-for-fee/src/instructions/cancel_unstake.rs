@@ -33,18 +33,18 @@ pub struct CancelUnstake<'info> {
         mut,
         has_one = pool,
         has_one = lock_escrow,
-        has_one = token_x_vault,
-        has_one = token_y_vault,
+        has_one = token_a_vault,
+        has_one = token_b_vault,
         has_one = top_staker_list,
         has_one = full_balance_list,
     )]
     pub vault: AccountLoader<'info, FeeVault>,
 
     #[account(mut)]
-    pub token_x_vault: Box<Account<'info, TokenAccount>>,
+    pub token_a_vault: Box<Account<'info, TokenAccount>>,
 
     #[account(mut)]
-    pub token_y_vault: Box<Account<'info, TokenAccount>>,
+    pub token_b_vault: Box<Account<'info, TokenAccount>>,
 
     #[account(mut)]
     pub owner: Signer<'info>,

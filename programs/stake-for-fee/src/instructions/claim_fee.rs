@@ -9,8 +9,8 @@ pub struct ClaimFee<'info> {
         mut,
         has_one = pool,
         has_one = lock_escrow,
-        has_one = token_x_vault,
-        has_one = token_y_vault,
+        has_one = token_a_vault,
+        has_one = token_b_vault,
         has_one = top_staker_list,
     )]
     pub vault: AccountLoader<'info, FeeVault>,
@@ -26,16 +26,16 @@ pub struct ClaimFee<'info> {
     pub stake_escrow: AccountLoader<'info, StakeEscrow>,
 
     #[account(mut)]
-    pub user_token_x: Box<Account<'info, TokenAccount>>,
+    pub user_token_a: Box<Account<'info, TokenAccount>>,
 
     #[account(mut)]
-    pub user_token_y: Box<Account<'info, TokenAccount>>,
+    pub user_token_b: Box<Account<'info, TokenAccount>>,
 
     #[account(mut)]
-    pub token_x_vault: Account<'info, TokenAccount>,
+    pub token_a_vault: Account<'info, TokenAccount>,
 
     #[account(mut)]
-    pub token_y_vault: Account<'info, TokenAccount>,
+    pub token_b_vault: Account<'info, TokenAccount>,
 
     pub owner: Signer<'info>,
 

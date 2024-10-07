@@ -38,23 +38,23 @@ pub struct InitializeVault<'info> {
     )]
     pub stake_token_vault: Box<Account<'info, TokenAccount>>,
 
-    /// Token x vault
+    /// Token a vault
     #[account(
         init_if_needed,
         payer = payer,
         associated_token::mint = token_a_mint,
         associated_token::authority = vault
     )]
-    pub token_x_vault: Box<Account<'info, TokenAccount>>,
+    pub token_a_vault: Box<Account<'info, TokenAccount>>,
 
-    /// Token y vault
+    /// Token b vault
     #[account(
         init_if_needed,
         payer = payer,
         associated_token::mint = token_b_mint,
         associated_token::authority = vault
     )]
-    pub token_y_vault: Box<Account<'info, TokenAccount>>,
+    pub token_b_vault: Box<Account<'info, TokenAccount>>,
 
     /// Top staker list account
     #[account(

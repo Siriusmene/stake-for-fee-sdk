@@ -11,10 +11,10 @@ pub struct FeeVault {
     pub pool: Pubkey,
     /// Stake token vault
     pub stake_token_vault: Pubkey,
-    /// Token x vault
-    pub token_x_vault: Pubkey,
-    /// Token y vault
-    pub token_y_vault: Pubkey,
+    /// Token a vault
+    pub token_a_vault: Pubkey,
+    /// Token b vault
+    pub token_b_vault: Pubkey,
     /// Top staker list
     pub top_staker_list: Pubkey,
     /// Full balance list
@@ -53,10 +53,10 @@ pub struct Configuration {
 pub struct Metrics {
     /// Total staked amount
     pub total_staked_amount: u64,
-    /// Fee x amount
-    pub total_fee_x_amount: u64,
-    /// Fee y amount
-    pub total_fee_y_amount: u64,
+    /// Fee a amount
+    pub total_fee_a_amount: u64,
+    /// Fee b amount
+    pub total_fee_b_amount: u64,
     /// Total stake escrow count
     pub total_stake_escrow_count: u64,
     /// Ongoing total partial unstake amount
@@ -76,14 +76,14 @@ pub struct TopStakerInfo {
     pub last_claim_fee_at: i64,
     /// Last fee drip updated at
     pub last_updated_at: i64,
-    /// Locked fee x
-    pub locked_fee_x: u64,
-    /// Locked fee y
-    pub locked_fee_y: u64,
+    /// Locked fee a
+    pub locked_fee_a: u64,
+    /// Locked fee b
+    pub locked_fee_b: u64,
     /// Padding
     pub padding: u64,
-    /// cumulative fee x per liquidity
-    pub cumulative_fee_x_per_liquidity: u128,
-    /// cumulative fee y per liquidity
-    pub cumulative_fee_y_per_liquidity: u128,
+    /// cumulative fee a per liquidity
+    pub cumulative_fee_a_per_liquidity: u128,
+    /// cumulative fee b per liquidity
+    pub cumulative_fee_b_per_liquidity: u128,
 }
