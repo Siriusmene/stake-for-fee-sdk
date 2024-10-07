@@ -65,6 +65,11 @@ pub mod stake_for_fee {
         Ok(())
     }
 
+    #[allow(unused_variables)]
+    pub fn claim_fee_crank(ctx: Context<ClaimFeeCrank>) -> Result<()> {
+        Ok(())
+    }
+
     /// To force IDL generation for some struct for easier TS decoding later
     pub fn _dummy(_ctx: Context<Dummy>) -> Result<()> {
         Ok(())

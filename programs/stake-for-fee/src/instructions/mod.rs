@@ -27,3 +27,6 @@ pub use initialize_config::*;
 
 mod close_config;
 pub use close_config::*;
+
+mod claim_fee_crank;
+pub use claim_fee_crank::*;
