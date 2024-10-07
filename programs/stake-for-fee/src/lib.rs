@@ -35,7 +35,7 @@ pub mod stake_for_fee {
     #[allow(unused_variables)]
     pub fn stake<'a, 'b, 'c, 'info>(
         ctx: Context<'a, 'b, 'c, 'info, Stake<'info>>,
-        amount: u64,
+        max_amount: u64,
     ) -> Result<()> {
         Ok(())
     }
