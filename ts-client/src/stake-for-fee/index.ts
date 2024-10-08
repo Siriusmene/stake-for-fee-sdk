@@ -373,27 +373,30 @@ export class StakeForFee {
       feeVaultKey,
       ammProgram.programId
     );
+    const lockEscrowAccount = await connection.getAccountInfo(lockEscrowPK);
     const preInstructions: TransactionInstruction[] = [];
-    const createLockEscrowIx = await ammProgram.methods
-      .createLockEscrow()
-      .accounts({
-        pool,
-        lockEscrow: lockEscrowPK,
-        owner: feeVaultKey,
-        lpMint: poolState.lpMint,
-        payer,
-        systemProgram: SystemProgram.programId,
-      })
-      .instruction();
-    preInstructions.push(createLockEscrowIx);
-    const { ix: createEscrowAtaIx } = await getOrCreateATAInstruction(
-      connection,
-      poolState.lpMint,
-      lockEscrowPK,
-      payer
-    );
+    if (lockEscrowAccount === null) {
+      const createLockEscrowIx = await ammProgram.methods
+        .createLockEscrow()
+        .accounts({
+          pool,
+          lockEscrow: lockEscrowPK,
+          owner: feeVaultKey,
+          lpMint: poolState.lpMint,
+          payer,
+          systemProgram: SystemProgram.programId,
+        })
+        .instruction();
+      preInstructions.push(createLockEscrowIx);
+      const { ix: createEscrowAtaIx } = await getOrCreateATAInstruction(
+        connection,
+        poolState.lpMint,
+        lockEscrowPK,
+        payer
+      );
 
-    createEscrowAtaIx && preInstructions.push(createEscrowAtaIx);
+      createEscrowAtaIx && preInstructions.push(createEscrowAtaIx);
+    }
 
     const transaction = await stakeForFeeProgram.methods
       .initializeVault(customStartClaimFeeTimestamp)
