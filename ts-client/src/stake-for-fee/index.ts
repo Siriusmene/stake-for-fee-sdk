@@ -45,6 +45,7 @@ import {
 } from "./helpers/program";
 import { getTopStakerListStateEntryStakeAmount } from "./helpers/staker_for_fee";
 import {
+  AccountStates,
   Clock,
   ClockLayout,
   DynamicAmmProgram,
@@ -65,25 +66,6 @@ type Opt = {
   dynamicAmmProgramId?: PublicKey;
   dynamicVaultProgramId?: PublicKey;
 };
-
-export interface AccountStates {
-  feeVault: FeeVault;
-  fullBalanceListState: FullBalanceListState;
-  topStakerListState: TopStakerListState;
-  aVault: DynamicVault;
-  bVault: DynamicVault;
-  aVaultLp: RawAccount;
-  bVaultLp: RawAccount;
-  aVaultLpMint: RawMint;
-  bVaultLpMint: RawMint;
-  tokenAMint: RawMint;
-  tokenBMint: RawMint;
-  stakeMint: RawMint;
-  ammPool: DynamicPool;
-  poolLpMint: RawMint;
-  lockEscrow: LockEscrow;
-  clock: Clock;
-}
 
 export class StakeForFee {
   constructor(

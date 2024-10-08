@@ -1,7 +1,11 @@
 import Decimal from "decimal.js";
-import { AccountStates } from "..";
 import { getLockedEscrowPendingFee } from "./dynamic_amm";
-import { StakeEscrow, TopStakerInfo, TopStakerListState } from "../types";
+import {
+  AccountStates,
+  StakeEscrow,
+  TopStakerInfo,
+  TopStakerListState,
+} from "../types";
 import { PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
 

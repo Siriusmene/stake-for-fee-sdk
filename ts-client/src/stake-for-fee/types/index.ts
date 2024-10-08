@@ -3,6 +3,26 @@ import { StakeForFee } from "../idls/stake_for_fee";
 import { Amm } from "../idls/dynamic_amm";
 import { Vault } from "../idls/dynamic_vault";
 import { i64, struct, u64 } from "@coral-xyz/borsh";
+import { RawAccount, RawMint } from "@solana/spl-token";
+
+export interface AccountStates {
+  feeVault: FeeVault;
+  fullBalanceListState: FullBalanceListState;
+  topStakerListState: TopStakerListState;
+  aVault: DynamicVault;
+  bVault: DynamicVault;
+  aVaultLp: RawAccount;
+  bVaultLp: RawAccount;
+  aVaultLpMint: RawMint;
+  bVaultLpMint: RawMint;
+  tokenAMint: RawMint;
+  tokenBMint: RawMint;
+  stakeMint: RawMint;
+  ammPool: DynamicPool;
+  poolLpMint: RawMint;
+  lockEscrow: LockEscrow;
+  clock: Clock;
+}
 
 // Stake for fee program
 export type StakeForFeeProgram = Program<StakeForFee>;
