@@ -18,3 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## @meteora-ag/stake-for-fee [1.0.1] [PR #2](https://github.com/MeteoraAg/alpha-vault-sdk/pull/2)
+
+### Fixed
+
+- build module
