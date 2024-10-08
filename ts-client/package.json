@@ -1,5 +1,5 @@
 {
-  "name": "stake-for-fee",
+  "name": "@meteora-ag/stake-for-fee",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
