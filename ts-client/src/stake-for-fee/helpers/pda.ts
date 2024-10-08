@@ -1,5 +1,16 @@
 import { PublicKey } from "@solana/web3.js";
 
+export const deriveLockEscrowPda = (
+  pool: PublicKey,
+  owner: PublicKey,
+  ammProgram: PublicKey
+) => {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("lock_escrow"), pool.toBuffer(), owner.toBuffer()],
+    ammProgram
+  );
+};
+
 export const deriveFeeVault = (pool: PublicKey, programId: PublicKey) => {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("vault"), pool.toBytes()],
@@ -41,16 +52,6 @@ export const deriveStakeEscrow = (
 ) => {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("escrow"), vault.toBytes(), owner.toBytes()],
-    programId
-  )[0];
-};
-
-export const deriveDynamicVaultLpMint = (
-  vault: PublicKey,
-  programId: PublicKey
-) => {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("lp_mint"), vault.toBytes()],
     programId
   )[0];
 };
