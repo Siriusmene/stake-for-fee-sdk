@@ -10,8 +10,7 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup",
-    "test": "ts-node src/test.ts"
+    "build": "tsup"
   },
   "author": "",
   "license": "ISC",
