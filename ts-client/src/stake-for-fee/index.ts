@@ -33,6 +33,7 @@ import {
   deriveDynamicVaultLpMint,
   deriveFeeVault,
   deriveFullBalanceList,
+  deriveLockEscrowPda,
   deriveStakeEscrow,
   deriveStakeTokenVault,
   deriveTopStakerList,
@@ -325,7 +326,6 @@ export class StakeForFee {
     connection: Connection,
     pool: PublicKey,
     stakeMint: PublicKey,
-    lockEscrow: PublicKey,
     payer: PublicKey,
     config: PublicKey,
     customStartClaimFeeTimestamp?: BN,
@@ -367,6 +367,33 @@ export class StakeForFee {
       true
     );
 
+    const [lockEscrowPK] = deriveLockEscrowPda(
+      pool,
+      feeVaultKey,
+      ammProgram.programId
+    );
+    const preInstructions: TransactionInstruction[] = [];
+    const createLockEscrowIx = await ammProgram.methods
+      .createLockEscrow()
+      .accounts({
+        pool,
+        lockEscrow: lockEscrowPK,
+        owner: feeVaultKey,
+        lpMint: poolState.lpMint,
+        payer,
+        systemProgram: SystemProgram.programId,
+      })
+      .instruction();
+    preInstructions.push(createLockEscrowIx);
+    const { ix: createEscrowAtaIx } = await getOrCreateATAInstruction(
+      connection,
+      poolState.lpMint,
+      lockEscrowPK,
+      payer
+    );
+
+    createEscrowAtaIx && preInstructions.push(createEscrowAtaIx);
+
     const transaction = await stakeForFeeProgram.methods
       .initializeVault(customStartClaimFeeTimestamp)
       .accounts({
@@ -383,10 +410,11 @@ export class StakeForFee {
         tokenBVault: tokenBVaultKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        lockEscrow,
+        lockEscrow: lockEscrowPK,
         payer,
         systemProgram: SystemProgram.programId,
       })
+      .preInstructions(preInstructions)
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =

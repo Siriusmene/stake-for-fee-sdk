@@ -10,7 +10,8 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "test": "ts-node src/test.ts"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "@coral-xyz/borsh": "^0.30.1",
     "@solana/spl-token": "^0.4.8",
     "@solana/web3.js": "^1.95.3",
+    "bn.js": "^5.2.1",
     "decimal.js": "^10.4.3"
   },
   "devDependencies": {
