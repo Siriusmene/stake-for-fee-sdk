@@ -30,7 +30,6 @@ import {
 } from "./helpers/decoder";
 import { getLockedEscrowPendingFee } from "./helpers/dynamic_amm";
 import {
-  deriveDynamicVaultLpMint,
   deriveFeeVault,
   deriveFullBalanceList,
   deriveLockEscrowPda,
@@ -217,8 +216,6 @@ export class StakeForFee {
       bVaultLpAccount,
       tokenAMintAccount,
       tokenBMintAccount,
-      aVaultLpMintAccount,
-      bVaultLpMintAccount,
       poolLpMintAccount,
     ] = await connection.getMultipleAccountsInfo([
       poolState.aVault,
@@ -228,8 +225,6 @@ export class StakeForFee {
       poolState.bVaultLp,
       poolState.tokenAMint,
       poolState.tokenBMint,
-      deriveDynamicVaultLpMint(poolState.aVault, dynamicVaultProgram.programId),
-      deriveDynamicVaultLpMint(poolState.bVault, dynamicVaultProgram.programId),
       poolState.lpMint,
     ]);
 
@@ -264,14 +259,6 @@ export class StakeForFee {
       new Uint8Array(tokenBMintAccount.data)
     );
 
-    const aVaultLpMintState: RawMint = MintLayout.decode(
-      new Uint8Array(aVaultLpMintAccount.data)
-    );
-
-    const bVaultLpMintState: RawMint = MintLayout.decode(
-      new Uint8Array(bVaultLpMintAccount.data)
-    );
-
     const poolLpMintState: RawMint = MintLayout.decode(
       new Uint8Array(poolLpMintAccount.data)
     );
@@ -284,6 +271,20 @@ export class StakeForFee {
       poolState.lpMint,
       feeVaultKey,
       true
+    );
+
+    const [aVaultLpMintAccount, bVaultLpMintAccount] =
+      await connection.getMultipleAccountsInfo([
+        aVaultState.lpMint,
+        bVaultState.lpMint,
+      ]);
+
+    const aVaultLpMintState: RawMint = MintLayout.decode(
+      new Uint8Array(aVaultLpMintAccount.data)
+    );
+
+    const bVaultLpMintState: RawMint = MintLayout.decode(
+      new Uint8Array(bVaultLpMintAccount.data)
     );
 
     let accountStates: AccountStates = {

@@ -15,7 +15,7 @@ export function decodeFullBalanceState(
 ): FullBalanceListState {
   const metadata: FullBalanceListMetadata =
     stakeForFeeProgram.coder.accounts.decode(
-      "FullBalanceListMetadata",
+      "fullBalanceListMetadata",
       account.data
     );
 
@@ -48,7 +48,7 @@ export function decodeTopStakerListState(
   account: AccountInfo<Buffer>
 ): TopStakerListState {
   const topStakerMetadataState: TopListMetadata =
-    stakeForFeeProgram.coder.accounts.decode("TopListMetadata", account.data);
+    stakeForFeeProgram.coder.accounts.decode("topListMetadata", account.data);
 
   const topStakerListSlice = account.data.slice(8 + 32);
   const stakerMetadataSize = 48;

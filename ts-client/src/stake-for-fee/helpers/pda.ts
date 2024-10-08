@@ -55,13 +55,3 @@ export const deriveStakeEscrow = (
     programId
   )[0];
 };
-
-export const deriveDynamicVaultLpMint = (
-  vault: PublicKey,
-  programId: PublicKey
-) => {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("lp_mint"), vault.toBytes()],
-    programId
-  )[0];
-};
