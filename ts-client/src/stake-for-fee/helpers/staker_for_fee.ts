@@ -43,7 +43,7 @@ interface FeeVaultPerformance {
   usdPerDay: Decimal;
 }
 
-interface FeeVaultContext {
+export interface FeeVaultContext {
   prizeUsd: Decimal;
   totalStakeUsd: Decimal;
   performance: FeeVaultPerformance;

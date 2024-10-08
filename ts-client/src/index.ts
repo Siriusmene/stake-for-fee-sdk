@@ -18,3 +18,4 @@ export type {
   FullBalanceListState,
   TopStakerListState,
 } from "./stake-for-fee/types";
+export type { FeeVaultContext } from "./stake-for-fee/helpers/staker_for_fee";
