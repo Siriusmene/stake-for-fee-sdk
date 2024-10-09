@@ -99,6 +99,7 @@ export function createDynamicVaultProgram(
  * @param connection The solana connection to use.
  * @param feeVaultKey The vault to get the stake escrow key for.
  * @param ownerKey The owner to get the stake escrow key for.
+ * @param payerKey The payer to pay for the account rent.
  * @param programId The program id of the stake-for-fee program.
  * @returns An object containing the stake escrow key and the instruction to create the account if it doesn't exist.
  */
@@ -106,6 +107,7 @@ export async function getOrCreateStakeEscrowInstruction(
   connection: Connection,
   feeVaultKey: PublicKey,
   ownerKey: PublicKey,
+  payerKey: PublicKey,
   programId: PublicKey
 ): Promise<GetOrCreateStakeEscrowResponse> {
   const stakeEscrowKey = deriveStakeEscrow(feeVaultKey, ownerKey, programId);
@@ -124,6 +126,7 @@ export async function getOrCreateStakeEscrowInstruction(
         escrow: stakeEscrowKey,
         owner: ownerKey,
         systemProgram: SystemProgram.programId,
+        payer: payerKey,
       })
       .instruction();
     return {

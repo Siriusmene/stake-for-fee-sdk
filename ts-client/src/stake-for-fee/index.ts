@@ -471,7 +471,11 @@ export class StakeForFee {
   findSmallestStakeEscrowInFullBalanceList(
     skipOwner: PublicKey
   ): PublicKey | null {
-    const endIdx = FULL_BALANCE_LIST_HARD_LIMIT.toNumber() - 1;
+    if (this.accountStates.fullBalanceListState.stakers.length == 0) {
+      return null;
+    }
+
+    const endIdx = this.accountStates.fullBalanceListState.stakers.length - 1;
     let smallestBalance = U64_MAX;
     let smallestOwner: PublicKey = null;
 
@@ -834,15 +838,21 @@ export class StakeForFee {
    *
    * @param maxAmount The max amount of tokens to stake
    * @param owner The owner of the stake. Signer.
+   * @param owner The payer for fee and account rental. Signer.
    * @returns The transaction to execute the stake instruction
    */
-  public async stake(maxAmount: BN, owner: PublicKey): Promise<Transaction> {
+  public async stake(
+    maxAmount: BN,
+    owner: PublicKey,
+    payer: PublicKey
+  ): Promise<Transaction> {
     const preInstructions: Array<TransactionInstruction> = [];
     const { stakeEscrowKey, ix: initializeStakeEscrowIx } =
       await getOrCreateStakeEscrowInstruction(
         this.connection,
         this.feeVaultKey,
         owner,
+        payer,
         this.stakeForFeeProgram.programId
       );
 
@@ -919,7 +929,7 @@ export class StakeForFee {
     return new Transaction({
       blockhash,
       lastValidBlockHeight,
-      feePayer: owner,
+      feePayer: payer,
     }).add(transaction);
   }
 
