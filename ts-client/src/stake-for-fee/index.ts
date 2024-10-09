@@ -471,7 +471,11 @@ export class StakeForFee {
   findSmallestStakeEscrowInFullBalanceList(
     skipOwner: PublicKey
   ): PublicKey | null {
-    const endIdx = FULL_BALANCE_LIST_HARD_LIMIT.toNumber() - 1;
+    if (this.accountStates.fullBalanceListState.stakers.length == 0) {
+      return null;
+    }
+
+    const endIdx = this.accountStates.fullBalanceListState.stakers.length - 1;
     let smallestBalance = U64_MAX;
     let smallestOwner: PublicKey = null;
 
