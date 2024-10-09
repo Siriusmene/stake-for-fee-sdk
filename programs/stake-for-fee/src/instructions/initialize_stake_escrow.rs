@@ -17,7 +17,7 @@ pub struct InitializeStakeEscrow<'info> {
         ],
         space = 8 + StakeEscrow::INIT_SPACE,
         bump,
-        payer = owner
+        payer = payer
     )]
     pub escrow: AccountLoader<'info, StakeEscrow>,
 
@@ -35,8 +35,11 @@ pub struct InitializeStakeEscrow<'info> {
     )]
     pub top_staker_list: AccountLoader<'info, TopListMetadata>,
 
+    /// CHECK: Owner of the stake escrow
+    pub owner: UncheckedAccount<'info>,
+
     #[account(mut)]
-    pub owner: Signer<'info>,
+    pub payer: Signer<'info>,
 
     pub system_program: Program<'info, System>,
 }

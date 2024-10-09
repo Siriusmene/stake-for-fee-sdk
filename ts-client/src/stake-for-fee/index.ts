@@ -838,15 +838,21 @@ export class StakeForFee {
    *
    * @param maxAmount The max amount of tokens to stake
    * @param owner The owner of the stake. Signer.
+   * @param owner The payer for fee and account rental. Signer.
    * @returns The transaction to execute the stake instruction
    */
-  public async stake(maxAmount: BN, owner: PublicKey): Promise<Transaction> {
+  public async stake(
+    maxAmount: BN,
+    owner: PublicKey,
+    payer: PublicKey
+  ): Promise<Transaction> {
     const preInstructions: Array<TransactionInstruction> = [];
     const { stakeEscrowKey, ix: initializeStakeEscrowIx } =
       await getOrCreateStakeEscrowInstruction(
         this.connection,
         this.feeVaultKey,
         owner,
+        payer,
         this.stakeForFeeProgram.programId
       );
 
@@ -923,7 +929,7 @@ export class StakeForFee {
     return new Transaction({
       blockhash,
       lastValidBlockHeight,
-      feePayer: owner,
+      feePayer: payer,
     }).add(transaction);
   }
 
