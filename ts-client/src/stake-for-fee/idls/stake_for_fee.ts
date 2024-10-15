@@ -51,6 +51,7 @@ export type StakeForFee = {
           name: "pool";
           isMut: false;
           isSigner: false;
+          docs: ["Pool account"];
         },
         {
           name: "tokenAMint";
@@ -74,6 +75,7 @@ export type StakeForFee = {
           name: "lockEscrow";
           isMut: false;
           isSigner: false;
+          docs: ["Escrow account"];
         },
         {
           name: "payer";
@@ -308,7 +310,7 @@ export type StakeForFee = {
       ];
       args: [
         {
-          name: "maxAmount";
+          name: "amount";
           type: "u64";
         }
       ];
@@ -783,6 +785,70 @@ export type StakeForFee = {
       args: [];
     },
     {
+      name: "initializeConfig";
+      accounts: [
+        {
+          name: "config";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "admin";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "eventAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "params";
+          type: {
+            defined: "InitializeConfigParams";
+          };
+        }
+      ];
+    },
+    {
+      name: "closeConfig";
+      accounts: [
+        {
+          name: "config";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "admin";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "eventAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
       name: "claimFeeCrank";
       accounts: [
         {
@@ -901,71 +967,6 @@ export type StakeForFee = {
         },
         {
           name: "stakerBalance";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "initializeConfig";
-      docs: ["Start of admin only endpoints *"];
-      accounts: [
-        {
-          name: "config";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "admin";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [
-        {
-          name: "params";
-          type: {
-            defined: "InitializeConfigParams";
-          };
-        }
-      ];
-    },
-    {
-      name: "closeConfig";
-      accounts: [
-        {
-          name: "config";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "admin";
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
           isMut: false;
           isSigner: false;
         }
@@ -1324,9 +1325,21 @@ export type StakeForFee = {
           {
             name: "owner";
             docs: [
-              "Owner pubkey, we dont need this for logic, but it is useful for indexing"
+              "Owner pubkey, we don't need this for logic, but it is useful for indexing"
             ];
             type: "publicKey";
+          },
+          {
+            name: "isInTopList";
+            docs: ["In top list"];
+            type: "u8";
+          },
+          {
+            name: "padding";
+            docs: ["Padding"];
+            type: {
+              array: ["u8", 7];
+            };
           }
         ];
       };
@@ -1351,7 +1364,7 @@ export type StakeForFee = {
           {
             name: "owner";
             docs: [
-              "Owner pubkey, we dont need this for logic, but it is usefull for indexing"
+              "Owner pubkey, we dont need this for logic, but it is useful for indexing"
             ];
             type: "publicKey";
           }
@@ -1511,6 +1524,21 @@ export type StakeForFee = {
             type: {
               array: ["u128", 4];
             };
+          }
+        ];
+      };
+    },
+    {
+      name: "Rounding";
+      docs: ["Round up, down"];
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "Up";
+          },
+          {
+            name: "Down";
           }
         ];
       };
@@ -2188,6 +2216,11 @@ export type StakeForFee = {
       code: 6019;
       name: "UndeterminedError";
       msg: "Undetermined error";
+    },
+    {
+      code: 6020;
+      name: "MissingSmallestStakeEscrow";
+      msg: "Missing smallest stake escrow";
     }
   ];
 };
@@ -2245,6 +2278,7 @@ export const IDL: StakeForFee = {
           name: "pool",
           isMut: false,
           isSigner: false,
+          docs: ["Pool account"],
         },
         {
           name: "tokenAMint",
@@ -2268,6 +2302,7 @@ export const IDL: StakeForFee = {
           name: "lockEscrow",
           isMut: false,
           isSigner: false,
+          docs: ["Escrow account"],
         },
         {
           name: "payer",
@@ -2502,7 +2537,7 @@ export const IDL: StakeForFee = {
       ],
       args: [
         {
-          name: "maxAmount",
+          name: "amount",
           type: "u64",
         },
       ],
@@ -2977,6 +3012,70 @@ export const IDL: StakeForFee = {
       args: [],
     },
     {
+      name: "initializeConfig",
+      accounts: [
+        {
+          name: "config",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "admin",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "eventAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "params",
+          type: {
+            defined: "InitializeConfigParams",
+          },
+        },
+      ],
+    },
+    {
+      name: "closeConfig",
+      accounts: [
+        {
+          name: "config",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "admin",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "eventAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
       name: "claimFeeCrank",
       accounts: [
         {
@@ -3095,71 +3194,6 @@ export const IDL: StakeForFee = {
         },
         {
           name: "stakerBalance",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [],
-    },
-    {
-      name: "initializeConfig",
-      docs: ["Start of admin only endpoints *"],
-      accounts: [
-        {
-          name: "config",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "admin",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: "params",
-          type: {
-            defined: "InitializeConfigParams",
-          },
-        },
-      ],
-    },
-    {
-      name: "closeConfig",
-      accounts: [
-        {
-          name: "config",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "admin",
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
           isMut: false,
           isSigner: false,
         },
@@ -3518,9 +3552,21 @@ export const IDL: StakeForFee = {
           {
             name: "owner",
             docs: [
-              "Owner pubkey, we dont need this for logic, but it is useful for indexing",
+              "Owner pubkey, we don't need this for logic, but it is useful for indexing",
             ],
             type: "publicKey",
+          },
+          {
+            name: "isInTopList",
+            docs: ["In top list"],
+            type: "u8",
+          },
+          {
+            name: "padding",
+            docs: ["Padding"],
+            type: {
+              array: ["u8", 7],
+            },
           },
         ],
       },
@@ -3545,7 +3591,7 @@ export const IDL: StakeForFee = {
           {
             name: "owner",
             docs: [
-              "Owner pubkey, we dont need this for logic, but it is usefull for indexing",
+              "Owner pubkey, we dont need this for logic, but it is useful for indexing",
             ],
             type: "publicKey",
           },
@@ -3705,6 +3751,21 @@ export const IDL: StakeForFee = {
             type: {
               array: ["u128", 4],
             },
+          },
+        ],
+      },
+    },
+    {
+      name: "Rounding",
+      docs: ["Round up, down"],
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "Up",
+          },
+          {
+            name: "Down",
           },
         ],
       },
@@ -4382,6 +4443,11 @@ export const IDL: StakeForFee = {
       code: 6019,
       name: "UndeterminedError",
       msg: "Undetermined error",
+    },
+    {
+      code: 6020,
+      name: "MissingSmallestStakeEscrow",
+      msg: "Missing smallest stake escrow",
     },
   ],
 };
