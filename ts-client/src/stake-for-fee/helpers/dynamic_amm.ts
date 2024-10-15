@@ -102,9 +102,9 @@ export function getLockedEscrowPendingFee(
   );
 
   const newFee = currentLpPerToken.gt(lockEscrow.lpPerToken)
-    ? lockEscrow.totalLockedAmount.mul(
-        currentLpPerToken.sub(lockEscrow.lpPerToken).div(currentLpPerToken)
-      )
+    ? lockEscrow.totalLockedAmount
+        .mul(currentLpPerToken.sub(lockEscrow.lpPerToken))
+        .div(currentLpPerToken)
     : new BN(0);
 
   if (newFee.isZero()) {
