@@ -1274,12 +1274,6 @@ export class StakeForFee {
         newFeeBPerLiquidity
       );
 
-    console.log(
-      newCumulativeFeeAPerLiquidity
-        .sub(stakeEscrow.feeAPerLiquidityCheckpoint)
-        .mul(stakeEscrow.stakeAmount)
-        .toString()
-    );
     const newFeeA = newCumulativeFeeAPerLiquidity
       .sub(stakeEscrow.feeAPerLiquidityCheckpoint)
       .mul(stakeEscrow.stakeAmount)
