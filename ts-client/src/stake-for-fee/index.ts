@@ -1080,7 +1080,11 @@ export class StakeForFee {
    * @param stakeEscrow The stake escrow to get the unstake records for.
    * @returns A promise that resolves with an array of unstake records that match the given stake escrow.
    */
-  static async getUnstakeByUser(connection: Connection, owner: PublicKey) {
+  static async getUnstakeByUser(
+    connection: Connection,
+    owner: PublicKey,
+    feeVault: PublicKey
+  ) {
     const stakeForFeeProgram = createStakeFeeProgram(
       connection,
       STAKE_FOR_FEE_PROGRAM_ID
@@ -1089,6 +1093,7 @@ export class StakeForFee {
     const [{ publicKey: stakeEscrow }] =
       await stakeForFeeProgram.account.stakeEscrow.all([
         { memcmp: { offset: 8, bytes: owner.toBase58() } },
+        { memcmp: { offset: 8 + 32, bytes: feeVault.toBase58() } },
       ]);
 
     return await stakeForFeeProgram.account.unstake.all([
