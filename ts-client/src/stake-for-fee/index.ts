@@ -1093,10 +1093,39 @@ export class StakeForFee {
   /** Start of helper functions */
 
   /**
+   * Gets all staked info for the given owner.
+   *
+   * @param connection The connection to use.
+   * @param owner The owner's pubkey.
+   * @returns A promise that resolves with an array of stake escrows that match the given owner.
+   */
+  static async getAllStakedVaultByUser(
+    connection: Connection,
+    owner: PublicKey
+  ) {
+    const stakeForFeeProgram = createStakeFeeProgram(
+      connection,
+      STAKE_FOR_FEE_PROGRAM_ID
+    );
+
+    const stakeEscrow = await stakeForFeeProgram.account.stakeEscrow.all([
+      { memcmp: { offset: 8, bytes: owner.toBase58() } },
+    ]);
+    const vaultsKey = stakeEscrow.map((stake) => stake.account.vault);
+    const vaults = await stakeForFeeProgram.account.feeVault.fetchMultiple(
+      vaultsKey
+    );
+    return stakeEscrow.map((stake, index) => {
+      const vault = vaults[index];
+      return { stake, vault };
+    });
+  }
+
+  /**
    * Gets all unstake records for the given stake escrow.
    *
    * @param connection The connection to use.
-   * @param stakeEscrow The stake escrow to get the unstake records for.
+   * @param owner The owner's pubkey.
    * @returns A promise that resolves with an array of unstake records that match the given stake escrow.
    */
   static async getUnstakeByUser(
