@@ -1347,7 +1347,7 @@ export class StakeForFee {
     );
     return stakeEscrow.map((stake, index) => {
       const vault = vaults[index];
-      return { stake, vault };
+      return { stake: stake.account, vault };
     });
   }
 
