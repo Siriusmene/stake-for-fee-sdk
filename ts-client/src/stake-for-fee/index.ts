@@ -55,6 +55,7 @@ import {
   DynamicVaultProgram,
   FeeVault,
   FullBalanceListState,
+  InitializeVaultParams,
   LockEscrow,
   StakeEscrow,
   StakeForFeeProgram,
@@ -334,8 +335,7 @@ export class StakeForFee {
     pool: PublicKey,
     stakeMint: PublicKey,
     payer: PublicKey,
-    config: PublicKey,
-    customStartClaimFeeTimestamp?: BN,
+    param?: InitializeVaultParams,
     opt?: Opt
   ): Promise<Transaction> {
     const stakeForFeeProgram = createStakeFeeProgram(
@@ -405,9 +405,8 @@ export class StakeForFee {
     }
 
     const transaction = await stakeForFeeProgram.methods
-      .initializeVault(customStartClaimFeeTimestamp ?? null)
+      .initializeVault(param)
       .accounts({
-        config,
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
         stakeMint,
@@ -457,10 +456,9 @@ export class StakeForFee {
     pool: PublicKey,
     stakeMint: PublicKey,
     payer: PublicKey,
-    config: PublicKey,
     tokenAMint: PublicKey,
     tokenBMint: PublicKey,
-    customStartClaimFeeTimestamp?: BN,
+    param?: InitializeVaultParams,
     opt?: Opt
   ): Promise<Transaction> {
     const stakeForFeeProgram = createStakeFeeProgram(
@@ -523,9 +521,8 @@ export class StakeForFee {
     }
 
     const transaction = await stakeForFeeProgram.methods
-      .initializeVault(customStartClaimFeeTimestamp ?? null)
+      .initializeVault(param)
       .accounts({
-        config,
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
         stakeMint,
@@ -574,10 +571,9 @@ export class StakeForFee {
     pool: PublicKey,
     stakeMint: PublicKey,
     payer: PublicKey,
-    config: PublicKey,
     tokenAMint: PublicKey,
     tokenBMint: PublicKey,
-    customStartClaimFeeTimestamp?: BN,
+    param?: InitializeVaultParams,
     opt?: Opt
   ): Promise<TransactionInstruction[]> {
     const stakeForFeeProgram = createStakeFeeProgram(
@@ -640,9 +636,8 @@ export class StakeForFee {
     }
 
     const createFeeVaultIx = await stakeForFeeProgram.methods
-      .initializeVault(customStartClaimFeeTimestamp ?? null)
+      .initializeVault(param)
       .accounts({
-        config,
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
         stakeMint,
@@ -1382,20 +1377,6 @@ export class StakeForFee {
         },
       },
     ]);
-  }
-
-  /**
-   * Gets all config accounts for the given stake-for-fee program.
-   * @param connection The connection to use.
-   * @param programId The program id of the stake-for-fee program. Defaults to the idl program id.
-   * @returns A promise that resolves with an array of config accounts.
-   */
-  static async getConfigs(connection: Connection, programId?: PublicKey) {
-    const stakeForFeeProgram = createStakeFeeProgram(
-      connection,
-      programId ?? STAKE_FOR_FEE_PROGRAM_ID
-    );
-    return await stakeForFeeProgram.account.config.all();
   }
 
   /**

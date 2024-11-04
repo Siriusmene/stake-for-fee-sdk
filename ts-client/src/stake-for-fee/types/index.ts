@@ -37,6 +37,8 @@ export type StakerMetadata = IdlTypes<StakeForFee>["StakerMetadata"];
 export type StakerBalance = IdlTypes<StakeForFee>["StakerBalance"];
 export type Metrics = IdlTypes<StakeForFee>["Metrics"];
 export type TopStakerInfo = IdlTypes<StakeForFee>["TopStakerInfo"];
+export type InitializeVaultParams =
+  IdlTypes<StakeForFee>["InitializeVaultParams"];
 
 export interface FullBalanceListState {
   metadata: FullBalanceListMetadata;
