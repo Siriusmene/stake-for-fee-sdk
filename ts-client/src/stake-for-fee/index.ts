@@ -335,7 +335,7 @@ export class StakeForFee {
     pool: PublicKey,
     stakeMint: PublicKey,
     payer: PublicKey,
-    param?: InitializeVaultParams,
+    param?: Exclude<InitializeVaultParams, "padding">,
     opt?: Opt
   ): Promise<Transaction> {
     const stakeForFeeProgram = createStakeFeeProgram(
@@ -405,7 +405,10 @@ export class StakeForFee {
     }
 
     const transaction = await stakeForFeeProgram.methods
-      .initializeVault(param)
+      .initializeVault({
+        ...param,
+        padding: new Array(64).fill(0),
+      })
       .accounts({
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
@@ -458,7 +461,7 @@ export class StakeForFee {
     payer: PublicKey,
     tokenAMint: PublicKey,
     tokenBMint: PublicKey,
-    param?: InitializeVaultParams,
+    param?: Exclude<InitializeVaultParams, "padding">,
     opt?: Opt
   ): Promise<Transaction> {
     const stakeForFeeProgram = createStakeFeeProgram(
@@ -521,7 +524,10 @@ export class StakeForFee {
     }
 
     const transaction = await stakeForFeeProgram.methods
-      .initializeVault(param)
+      .initializeVault({
+        ...param,
+        padding: new Array(64).fill(0),
+      })
       .accounts({
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
@@ -573,7 +579,7 @@ export class StakeForFee {
     payer: PublicKey,
     tokenAMint: PublicKey,
     tokenBMint: PublicKey,
-    param?: InitializeVaultParams,
+    param?: Exclude<InitializeVaultParams, "padding">,
     opt?: Opt
   ): Promise<TransactionInstruction[]> {
     const stakeForFeeProgram = createStakeFeeProgram(
@@ -636,7 +642,10 @@ export class StakeForFee {
     }
 
     const createFeeVaultIx = await stakeForFeeProgram.methods
-      .initializeVault(param)
+      .initializeVault({
+        ...param,
+        padding: new Array(64).fill(0),
+      })
       .accounts({
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
