@@ -20,6 +20,7 @@ import {
   TokenAccountNotFoundError,
   TokenInvalidAccountOwnerError,
 } from "@solana/spl-token";
+import { getAlphaAccessTokenRemainingAccounts } from "./staker_for_fee";
 
 export interface GetOrCreateStakeEscrowResponse {
   stakeEscrowKey: PublicKey;
@@ -127,6 +128,7 @@ export async function getOrCreateStakeEscrowInstruction(
         systemProgram: SystemProgram.programId,
         payer: ownerKey,
       })
+      .remainingAccounts([...getAlphaAccessTokenRemainingAccounts(ownerKey)])
       .instruction();
     return {
       stakeEscrowKey,
