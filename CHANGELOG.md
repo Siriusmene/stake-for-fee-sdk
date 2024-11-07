@@ -19,6 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## stake-for-fee [0.1.1] [PR #2](https://github.com/MeteoraAg/alpha-vault-sdk/pull/2)
+
+### Changed
+
+- Breaking change for endpoint `claim_fee`. Now, it can only partial claim quote token. Base token will be automatically restaked.
+
+## @meteora-ag/stake-for-fee [1.0.17] [PR #2](https://github.com/MeteoraAg/alpha-vault-sdk/pull/2)
+
+### Changed
+
+- Breaking change for function `claimFee`. Now, it can only partial claim quote token. Base token will be automatically restaked.
+
 ## @meteora-ag/stake-for-fee [1.0.1] [PR #2](https://github.com/MeteoraAg/alpha-vault-sdk/pull/2)
 
 ### Fixed

@@ -333,6 +333,9 @@ export type StakeForFee = {
     },
     {
       "name": "claimFee",
+      "docs": [
+        "The endpoint will only claim the quote token (SOL or USDC). The meme token will be automatically restaked."
+      ],
       "accounts": [
         {
           "name": "vault",
@@ -345,17 +348,23 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
+          "name": "fullBalanceList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "stakeEscrow",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTokenA",
+          "name": "smallestStakeEscrow",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         },
         {
-          "name": "userTokenB",
+          "name": "userQuoteToken",
           "isMut": true,
           "isSigner": false
         },
@@ -462,11 +471,7 @@ export type StakeForFee = {
       ],
       "args": [
         {
-          "name": "maxFeeA",
-          "type": "u64"
-        },
-        {
-          "name": "maxFeeB",
+          "name": "maxFee",
           "type": "u64"
         }
       ]
@@ -2705,6 +2710,9 @@ export const IDL: StakeForFee = {
     },
     {
       "name": "claimFee",
+      "docs": [
+        "The endpoint will only claim the quote token (SOL or USDC). The meme token will be automatically restaked."
+      ],
       "accounts": [
         {
           "name": "vault",
@@ -2717,17 +2725,23 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
+          "name": "fullBalanceList",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "stakeEscrow",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "userTokenA",
+          "name": "smallestStakeEscrow",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "isOptional": true
         },
         {
-          "name": "userTokenB",
+          "name": "userQuoteToken",
           "isMut": true,
           "isSigner": false
         },
@@ -2834,11 +2848,7 @@ export const IDL: StakeForFee = {
       ],
       "args": [
         {
-          "name": "maxFeeA",
-          "type": "u64"
-        },
-        {
-          "name": "maxFeeB",
+          "name": "maxFee",
           "type": "u64"
         }
       ]
