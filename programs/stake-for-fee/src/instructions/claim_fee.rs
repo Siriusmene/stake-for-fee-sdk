@@ -1,4 +1,4 @@
-use crate::states::{FeeVault, StakeEscrow, TopListMetadata};
+use crate::states::{FeeVault, FullBalanceListMetadata, StakeEscrow, TopListMetadata};
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
@@ -16,6 +16,9 @@ pub struct ClaimFee<'info> {
     pub vault: AccountLoader<'info, FeeVault>,
 
     #[account(mut)]
+    pub full_balance_list: AccountLoader<'info, FullBalanceListMetadata>,
+
+    #[account(mut)]
     pub top_staker_list: AccountLoader<'info, TopListMetadata>,
 
     #[account(
@@ -26,10 +29,7 @@ pub struct ClaimFee<'info> {
     pub stake_escrow: AccountLoader<'info, StakeEscrow>,
 
     #[account(mut)]
-    pub user_token_a: Box<Account<'info, TokenAccount>>,
-
-    #[account(mut)]
-    pub user_token_b: Box<Account<'info, TokenAccount>>,
+    pub user_quote_token: Box<Account<'info, TokenAccount>>,
 
     #[account(mut)]
     pub token_a_vault: Account<'info, TokenAccount>,

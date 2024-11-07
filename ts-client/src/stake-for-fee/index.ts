@@ -18,6 +18,7 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import {
+  ALPHA_ACCESS_MINT,
   DYNAMIC_AMM_PROGRAM_ID,
   DYNAMIC_VAULT_PROGRAM_ID,
   STAKE_FOR_FEE_PROGRAM_ID,
@@ -44,7 +45,10 @@ import {
   getOrCreateATAInstruction,
   getOrCreateStakeEscrowInstruction,
 } from "./helpers/program";
-import { getTopStakerListStateEntryStakeAmount } from "./helpers/staker_for_fee";
+import {
+  getAlphaAccessTokenRemainingAccounts,
+  getTopStakerListStateEntryStakeAmount,
+} from "./helpers/staker_for_fee";
 import {
   AccountStates,
   Clock,
@@ -427,6 +431,7 @@ export class StakeForFee {
         systemProgram: SystemProgram.programId,
       })
       .preInstructions(preInstructions)
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(payer))
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
@@ -546,6 +551,7 @@ export class StakeForFee {
         systemProgram: SystemProgram.programId,
       })
       .preInstructions(preInstructions)
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(payer))
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
@@ -663,6 +669,7 @@ export class StakeForFee {
         payer,
         systemProgram: SystemProgram.programId,
       })
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(payer))
       .instruction();
 
     instructions.push(createFeeVaultIx);
@@ -695,6 +702,7 @@ export class StakeForFee {
         owner,
         systemProgram: SystemProgram.programId,
       })
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(owner))
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
@@ -983,52 +991,57 @@ export class StakeForFee {
    * Claim fee from stake escrow.
    *
    * @param owner Owner of stake escrow.
-   * @param maxFeeA Max fee A.
-   * @param maxFeeB Max fee B.
+   * @param maxFee Max fee
    * @returns Transaction
    */
-  public async claimFee(
-    owner: PublicKey,
-    maxFeeA: BN,
-    maxFeeB: BN,
-    opt?: {
-      reStake?: boolean;
-    }
-  ): Promise<Transaction[]> {
+  public async claimFee(owner: PublicKey, maxFee: BN): Promise<Transaction[]> {
     const stakeEscrowKey = deriveStakeEscrow(
       this.feeVaultKey,
       owner,
       this.stakeForFeeProgram.programId
     );
 
+    const quoteTokenMint = this.accountStates.ammPool.tokenAMint.equals(
+      this.accountStates.feeVault.stakeMint
+    )
+      ? this.accountStates.ammPool.tokenBMint
+      : this.accountStates.ammPool.tokenAMint;
+
     const transactionArray: Transaction[] = [];
     const preInstructions = [];
 
-    const [
-      { ataPubKey: userTokenA, ix: initializeUserTokenAIx },
-      { ataPubKey: userTokenB, ix: initializeUserTokenBIx },
-    ] = await Promise.all([
-      getOrCreateATAInstruction(
-        this.connection,
-        this.accountStates.ammPool.tokenAMint,
-        owner
-      ),
-      getOrCreateATAInstruction(
-        this.connection,
-        this.accountStates.ammPool.tokenBMint,
-        owner
-      ),
-    ]);
+    const { ataPubKey: userQuoteToken, ix: initializeUserQuoteTokenIx } =
+      await getOrCreateATAInstruction(this.connection, quoteTokenMint, owner);
 
-    initializeUserTokenAIx && preInstructions.push(initializeUserTokenAIx);
-    initializeUserTokenBIx && preInstructions.push(initializeUserTokenBIx);
+    initializeUserQuoteTokenIx &&
+      preInstructions.push(initializeUserQuoteTokenIx);
+
+    const remainingAccounts: Array<AccountMeta> = [];
+    const stakeEscrowState =
+      await this.stakeForFeeProgram.account.stakeEscrow.fetch(stakeEscrowKey);
+
+    if (!Boolean(stakeEscrowState.inTopList)) {
+      const smallestStakeEscrows: Array<AccountMeta> =
+        this.findReplaceableTopStaker(3).map((key) => {
+          return {
+            pubkey: key,
+            isWritable: true,
+            isSigner: false,
+          };
+        });
+
+      remainingAccounts.push(...smallestStakeEscrows);
+    }
+
+    const smallestStakeEscrow =
+      this.findSmallestStakeEscrowInFullBalanceList(owner);
 
     const claimTx = await this.stakeForFeeProgram.methods
-      .claimFee(maxFeeA, maxFeeB)
+      .claimFee(maxFee)
       .accounts({
-        userTokenA,
-        userTokenB,
+        userQuoteToken,
         vault: this.feeVaultKey,
+        fullBalanceList: this.accountStates.feeVault.fullBalanceList,
         topStakerList: this.accountStates.feeVault.topStakerList,
         stakeEscrow: stakeEscrowKey,
         tokenAVault: this.accountStates.feeVault.tokenAVault,
@@ -1048,74 +1061,14 @@ export class StakeForFee {
         bVaultLpMint: this.accountStates.bVault.lpMint,
         ammProgram: this.dynamicAmmProgram.programId,
         vaultProgram: this.dynamicVaultProgram.programId,
+        smallestStakeEscrow,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .preInstructions(preInstructions)
+      .remainingAccounts(remainingAccounts)
       .transaction();
 
     transactionArray.push(claimTx);
-
-    if (opt?.reStake) {
-      const remainingAccounts: Array<AccountMeta> = [];
-      const stakeEscrowState =
-        await this.stakeForFeeProgram.account.stakeEscrow.fetch(stakeEscrowKey);
-      const { ataPubKey: userStakeTokenKey } = await getOrCreateATAInstruction(
-        this.connection,
-        this.accountStates.feeVault.stakeMint,
-        owner
-      );
-
-      if (!Boolean(stakeEscrowState.inTopList)) {
-        const smallestStakeEscrows: Array<AccountMeta> =
-          this.findReplaceableTopStaker(3).map((key) => {
-            return {
-              pubkey: key,
-              isWritable: true,
-              isSigner: false,
-            };
-          });
-
-        remainingAccounts.push(...smallestStakeEscrows);
-      }
-
-      const smallestStakeEscrow =
-        this.findSmallestStakeEscrowInFullBalanceList(owner);
-
-      const stakeTx = await this.stakeForFeeProgram.methods
-        .stake(maxFeeA)
-        .accounts({
-          vault: this.feeVaultKey,
-          stakeTokenVault: this.accountStates.feeVault.stakeTokenVault,
-          topStakerList: this.accountStates.feeVault.topStakerList,
-          fullBalanceList: this.accountStates.feeVault.fullBalanceList,
-          stakeEscrow: stakeEscrowKey,
-          smallestStakeEscrow,
-          userStakeToken: userStakeTokenKey,
-          tokenAVault: this.accountStates.feeVault.tokenAVault,
-          tokenBVault: this.accountStates.feeVault.tokenBVault,
-          owner,
-          pool: this.accountStates.feeVault.pool,
-          lpMint: this.accountStates.ammPool.lpMint,
-          lockEscrow: this.accountStates.feeVault.lockEscrow,
-          escrowVault: this.escrowVaultKey,
-          aTokenVault: this.accountStates.aVault.tokenVault,
-          bTokenVault: this.accountStates.bVault.tokenVault,
-          aVault: this.accountStates.ammPool.aVault,
-          bVault: this.accountStates.ammPool.bVault,
-          aVaultLp: this.accountStates.ammPool.aVaultLp,
-          bVaultLp: this.accountStates.ammPool.bVaultLp,
-          aVaultLpMint: this.accountStates.aVault.lpMint,
-          bVaultLpMint: this.accountStates.bVault.lpMint,
-          ammProgram: this.dynamicAmmProgram.programId,
-          vaultProgram: this.dynamicVaultProgram.programId,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        })
-        .remainingAccounts(remainingAccounts)
-        .preInstructions([computeUnitIx()])
-        .transaction();
-
-      transactionArray.push(stakeTx);
-    }
 
     const { blockhash, lastValidBlockHeight } =
       await this.connection.getLatestBlockhash("confirmed");

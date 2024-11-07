@@ -4,7 +4,7 @@ A staking program allows top stakers to earn fee from dynamic-amm
 
 ## Program ID:
 
-Production: fEepkSV8Bqq9JJTC1zSe4X6cW1GJUpHFkJpfJUjxo8J
+Production: FEEHYhjjfkBeHqb3D1yxY3gYeNa96uYpUZvRhV6cC1N8
 
 ## Branches and tags
 
