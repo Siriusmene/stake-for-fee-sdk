@@ -7,8 +7,10 @@ import {
   TopStakerListState,
   TopStakerListStateContext,
 } from "../types";
-import { PublicKey } from "@solana/web3.js";
+import { AccountMeta, PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { ALPHA_ACCESS_MINT } from "../constants";
 
 export function getTopStakerListStateEntryStakeAmount(
   topStakerListState: TopStakerListState
@@ -318,3 +320,20 @@ export function getStakeEscrowEarningPerDayAfterUnstake(
   return new Decimal(0);
 }
 /** End of section which will be removed after keeper is done. */
+
+export function getAlphaAccessTokenRemainingAccounts(
+  user: PublicKey
+): AccountMeta[] {
+  const userAccessToken = getAssociatedTokenAddressSync(
+    ALPHA_ACCESS_MINT,
+    user
+  );
+
+  return [
+    {
+      pubkey: userAccessToken,
+      isSigner: false,
+      isWritable: false,
+    },
+  ];
+}

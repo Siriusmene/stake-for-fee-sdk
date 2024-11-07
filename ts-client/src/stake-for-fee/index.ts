@@ -18,6 +18,7 @@ import {
   TransactionInstruction,
 } from "@solana/web3.js";
 import {
+  ALPHA_ACCESS_MINT,
   DYNAMIC_AMM_PROGRAM_ID,
   DYNAMIC_VAULT_PROGRAM_ID,
   STAKE_FOR_FEE_PROGRAM_ID,
@@ -44,7 +45,10 @@ import {
   getOrCreateATAInstruction,
   getOrCreateStakeEscrowInstruction,
 } from "./helpers/program";
-import { getTopStakerListStateEntryStakeAmount } from "./helpers/staker_for_fee";
+import {
+  getAlphaAccessTokenRemainingAccounts,
+  getTopStakerListStateEntryStakeAmount,
+} from "./helpers/staker_for_fee";
 import {
   AccountStates,
   Clock,
@@ -427,6 +431,7 @@ export class StakeForFee {
         systemProgram: SystemProgram.programId,
       })
       .preInstructions(preInstructions)
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(payer))
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
@@ -546,6 +551,7 @@ export class StakeForFee {
         systemProgram: SystemProgram.programId,
       })
       .preInstructions(preInstructions)
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(payer))
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
@@ -663,6 +669,7 @@ export class StakeForFee {
         payer,
         systemProgram: SystemProgram.programId,
       })
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(payer))
       .instruction();
 
     instructions.push(createFeeVaultIx);
@@ -695,6 +702,7 @@ export class StakeForFee {
         owner,
         systemProgram: SystemProgram.programId,
       })
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(owner))
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
