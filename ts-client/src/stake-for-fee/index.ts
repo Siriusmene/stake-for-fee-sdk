@@ -896,6 +896,7 @@ export class StakeForFee {
         owner,
       })
       .preInstructions(preInstructions)
+      .remainingAccounts(getAlphaAccessTokenRemainingAccounts(owner))
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
@@ -931,7 +932,9 @@ export class StakeForFee {
     const stakeEscrowState =
       await this.stakeForFeeProgram.account.stakeEscrow.fetch(stakeEscrowKey);
 
-    const remainingAccounts: Array<AccountMeta> = [];
+    const remainingAccounts: Array<AccountMeta> = [
+      ...getAlphaAccessTokenRemainingAccounts(owner),
+    ];
 
     if (Boolean(stakeEscrowState.inTopList)) {
       const candidateToEnterTopList: Array<AccountMeta> =
@@ -1016,7 +1019,9 @@ export class StakeForFee {
     initializeUserQuoteTokenIx &&
       preInstructions.push(initializeUserQuoteTokenIx);
 
-    const remainingAccounts: Array<AccountMeta> = [];
+    const remainingAccounts: Array<AccountMeta> = [
+      ...getAlphaAccessTokenRemainingAccounts(owner),
+    ];
     const stakeEscrowState =
       await this.stakeForFeeProgram.account.stakeEscrow.fetch(stakeEscrowKey);
 
@@ -1113,7 +1118,9 @@ export class StakeForFee {
     initializeUserStakeTokenIx &&
       preInstructions.push(initializeUserStakeTokenIx);
 
-    const remainingAccounts: Array<AccountMeta> = [];
+    const remainingAccounts: Array<AccountMeta> = [
+      ...getAlphaAccessTokenRemainingAccounts(owner),
+    ];
     if (!initializeStakeEscrowIx) {
       const stakeEscrowState =
         await this.stakeForFeeProgram.account.stakeEscrow.fetch(stakeEscrowKey);
@@ -1194,7 +1201,9 @@ export class StakeForFee {
       this.stakeForFeeProgram.programId
     );
 
-    const remainingAccounts: Array<AccountMeta> = [];
+    const remainingAccounts: Array<AccountMeta> = [
+      ...getAlphaAccessTokenRemainingAccounts(owner),
+    ];
     const stakeEscrowState =
       await this.stakeForFeeProgram.account.stakeEscrow.fetch(stakeEscrowKey);
 
