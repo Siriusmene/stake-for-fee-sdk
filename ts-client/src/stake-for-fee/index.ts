@@ -1008,7 +1008,7 @@ export class StakeForFee {
       : this.accountStates.ammPool.tokenAMint;
 
     const transactionArray: Transaction[] = [];
-    const preInstructions = [];
+    const preInstructions = [computeUnitIx()];
 
     const { ataPubKey: userQuoteToken, ix: initializeUserQuoteTokenIx } =
       await getOrCreateATAInstruction(this.connection, quoteTokenMint, owner);
