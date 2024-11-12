@@ -843,15 +843,6 @@ export class StakeForFee {
       }
     }
 
-    console.log(
-      smallestStakers.map((s) => {
-        return {
-          amount: s.stakeAmount.toString(),
-          owner: s.owner.toString(),
-        };
-      })
-    );
-
     return smallestStakers.map((s) =>
       deriveStakeEscrow(
         this.feeVaultKey,
