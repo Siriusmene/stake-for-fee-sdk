@@ -67,6 +67,7 @@ import {
   TopStakerListState,
 } from "./types";
 import { computeUnitIx } from "./helpers/tx";
+import { COMPUTE_UNIT } from "./constants/compute";
 
 type Opt = {
   stakeForFeeProgramId?: PublicKey;
@@ -942,6 +943,7 @@ export class StakeForFee {
       remainingAccounts.push(...candidateToEnterTopList);
     }
 
+    const preInstructions: Array<TransactionInstruction> = [computeUnitIx(COMPUTE_UNIT.UNSTAKE)];
     const transaction = await this.stakeForFeeProgram.methods
       .requestUnstake(amount)
       .accounts({
@@ -970,6 +972,7 @@ export class StakeForFee {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .remainingAccounts(remainingAccounts)
+      .preInstructions(preInstructions)
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
@@ -1004,7 +1007,7 @@ export class StakeForFee {
       : this.accountStates.ammPool.tokenAMint;
 
     const transactionArray: Transaction[] = [];
-    const preInstructions = [computeUnitIx()];
+    const preInstructions = [computeUnitIx(COMPUTE_UNIT.CLAIM)];
 
     const { ataPubKey: userQuoteToken, ix: initializeUserQuoteTokenIx } =
       await getOrCreateATAInstruction(this.connection, quoteTokenMint, owner);
@@ -1088,7 +1091,9 @@ export class StakeForFee {
    * @returns The transaction to execute the stake instruction
    */
   public async stake(maxAmount: BN, owner: PublicKey): Promise<Transaction> {
-    const preInstructions: Array<TransactionInstruction> = [computeUnitIx()];
+    const preInstructions: Array<TransactionInstruction> = [
+      computeUnitIx(COMPUTE_UNIT.STAKE),
+    ];
     const { stakeEscrowKey, ix: initializeStakeEscrowIx } =
       await getOrCreateStakeEscrowInstruction(
         this.connection,
@@ -1204,6 +1209,9 @@ export class StakeForFee {
     const smallestStakeEscrow =
       this.findSmallestStakeEscrowInFullBalanceList(owner);
 
+    const preInstructions: Array<TransactionInstruction> = [
+      computeUnitIx(COMPUTE_UNIT.CANCEL_UNSTAKE),
+    ];
     const transaction = await this.stakeForFeeProgram.methods
       .cancelUnstake()
       .accounts({
@@ -1233,6 +1241,7 @@ export class StakeForFee {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .remainingAccounts(remainingAccounts)
+      .preInstructions(preInstructions)
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =

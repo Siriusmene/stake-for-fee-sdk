@@ -1,7 +1,7 @@
 import { ComputeBudgetProgram } from "@solana/web3.js";
 
-export const computeUnitIx = () => {
+export const computeUnitIx = (units?: number) => {
   return ComputeBudgetProgram.setComputeUnitLimit({
-    units: 1_400_000,
+    units: units ?? 1_400_000,
   });
 };
