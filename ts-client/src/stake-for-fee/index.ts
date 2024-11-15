@@ -1090,6 +1090,7 @@ export class StakeForFee {
    * @param maxAmount The max amount of tokens to stake
    * @param owner The owner of the stake. Signer.
    * @param owner The payer for fee and account rental. Signer.
+   * @param replaceableTopStakerCount The number of top stakers that can be replaced. Default is 2 (Max = 2).
    * @returns The transaction to execute the stake instruction
    */
   public async stake(maxAmount: BN, owner: PublicKey, replaceableTopStakerCount = 2): Promise<Transaction> {
