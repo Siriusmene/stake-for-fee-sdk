@@ -943,7 +943,9 @@ export class StakeForFee {
       remainingAccounts.push(...candidateToEnterTopList);
     }
 
-    const preInstructions: Array<TransactionInstruction> = [computeUnitIx(COMPUTE_UNIT.UNSTAKE)];
+    const preInstructions: Array<TransactionInstruction> = [
+      computeUnitIx(COMPUTE_UNIT.UNSTAKE),
+    ];
     const transaction = await this.stakeForFeeProgram.methods
       .requestUnstake(amount)
       .accounts({
@@ -1104,20 +1106,17 @@ export class StakeForFee {
 
     initializeStakeEscrowIx && preInstructions.push(initializeStakeEscrowIx);
 
-    const { ataPubKey: userStakeTokenKey, ix: initializeUserStakeTokenIx } =
+    const { ataPubKey: userStakeTokenKey } =
       await getOrCreateATAInstruction(
         this.connection,
         this.accountStates.feeVault.stakeMint,
         owner
       );
 
-    initializeUserStakeTokenIx &&
-      preInstructions.push(initializeUserStakeTokenIx);
-
     const remainingAccounts: Array<AccountMeta> = [];
 
     const smallestStakeEscrows: Array<AccountMeta> =
-      this.findReplaceableTopStaker(3).map((key) => {
+      this.findReplaceableTopStaker(2).map((key) => {
         return {
           pubkey: key,
           isWritable: true,
