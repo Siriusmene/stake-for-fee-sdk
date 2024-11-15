@@ -1092,7 +1092,10 @@ export class StakeForFee {
    * @param owner The payer for fee and account rental. Signer.
    * @returns The transaction to execute the stake instruction
    */
-  public async stake(maxAmount: BN, owner: PublicKey): Promise<Transaction> {
+  public async stake(maxAmount: BN, owner: PublicKey, replaceableTopStakerCount = 2): Promise<Transaction> {
+    if (replaceableTopStakerCount > 2) {
+      throw new Error('replaceableTopStakerCount must be less than or equal to 2');
+    }
     const preInstructions: Array<TransactionInstruction> = [
       computeUnitIx(COMPUTE_UNIT.STAKE),
     ];
@@ -1106,17 +1109,12 @@ export class StakeForFee {
 
     initializeStakeEscrowIx && preInstructions.push(initializeStakeEscrowIx);
 
-    const { ataPubKey: userStakeTokenKey } =
-      await getOrCreateATAInstruction(
-        this.connection,
-        this.accountStates.feeVault.stakeMint,
-        owner
-      );
+    const userStakeTokenKey = getAssociatedTokenAddressSync(this.accountStates.feeVault.stakeMint, owner);
 
     const remainingAccounts: Array<AccountMeta> = [];
 
     const smallestStakeEscrows: Array<AccountMeta> =
-      this.findReplaceableTopStaker(2).map((key) => {
+      this.findReplaceableTopStaker(replaceableTopStakerCount).map((key) => {
         return {
           pubkey: key,
           isWritable: true,
