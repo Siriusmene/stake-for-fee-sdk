@@ -943,7 +943,9 @@ export class StakeForFee {
       remainingAccounts.push(...candidateToEnterTopList);
     }
 
-    const preInstructions: Array<TransactionInstruction> = [computeUnitIx(COMPUTE_UNIT.UNSTAKE)];
+    const preInstructions: Array<TransactionInstruction> = [
+      computeUnitIx(COMPUTE_UNIT.UNSTAKE),
+    ];
     const transaction = await this.stakeForFeeProgram.methods
       .requestUnstake(amount)
       .accounts({
@@ -1088,9 +1090,13 @@ export class StakeForFee {
    * @param maxAmount The max amount of tokens to stake
    * @param owner The owner of the stake. Signer.
    * @param owner The payer for fee and account rental. Signer.
+   * @param replaceableTopStakerCount The number of top stakers that can be replaced. Default is 2 (Max = 2).
    * @returns The transaction to execute the stake instruction
    */
-  public async stake(maxAmount: BN, owner: PublicKey): Promise<Transaction> {
+  public async stake(maxAmount: BN, owner: PublicKey, replaceableTopStakerCount = 2): Promise<Transaction> {
+    if (replaceableTopStakerCount > 2) {
+      throw new Error('replaceableTopStakerCount must be less than or equal to 2');
+    }
     const preInstructions: Array<TransactionInstruction> = [
       computeUnitIx(COMPUTE_UNIT.STAKE),
     ];
@@ -1104,20 +1110,12 @@ export class StakeForFee {
 
     initializeStakeEscrowIx && preInstructions.push(initializeStakeEscrowIx);
 
-    const { ataPubKey: userStakeTokenKey, ix: initializeUserStakeTokenIx } =
-      await getOrCreateATAInstruction(
-        this.connection,
-        this.accountStates.feeVault.stakeMint,
-        owner
-      );
-
-    initializeUserStakeTokenIx &&
-      preInstructions.push(initializeUserStakeTokenIx);
+    const userStakeTokenKey = getAssociatedTokenAddressSync(this.accountStates.feeVault.stakeMint, owner);
 
     const remainingAccounts: Array<AccountMeta> = [];
 
     const smallestStakeEscrows: Array<AccountMeta> =
-      this.findReplaceableTopStaker(3).map((key) => {
+      this.findReplaceableTopStaker(replaceableTopStakerCount).map((key) => {
         return {
           pubkey: key,
           isWritable: true,
