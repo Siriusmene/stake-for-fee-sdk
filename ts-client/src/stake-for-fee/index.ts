@@ -1093,9 +1093,15 @@ export class StakeForFee {
    * @param replaceableTopStakerCount The number of top stakers that can be replaced. Default is 2 (Max = 2).
    * @returns The transaction to execute the stake instruction
    */
-  public async stake(maxAmount: BN, owner: PublicKey, replaceableTopStakerCount = 2): Promise<Transaction> {
+  public async stake(
+    maxAmount: BN,
+    owner: PublicKey,
+    replaceableTopStakerCount = 2
+  ): Promise<Transaction> {
     if (replaceableTopStakerCount > 2) {
-      throw new Error('replaceableTopStakerCount must be less than or equal to 2');
+      throw new Error(
+        "replaceableTopStakerCount must be less than or equal to 2"
+      );
     }
     const preInstructions: Array<TransactionInstruction> = [
       computeUnitIx(COMPUTE_UNIT.STAKE),
@@ -1110,7 +1116,10 @@ export class StakeForFee {
 
     initializeStakeEscrowIx && preInstructions.push(initializeStakeEscrowIx);
 
-    const userStakeTokenKey = getAssociatedTokenAddressSync(this.accountStates.feeVault.stakeMint, owner);
+    const userStakeTokenKey = getAssociatedTokenAddressSync(
+      this.accountStates.feeVault.stakeMint,
+      owner
+    );
 
     const remainingAccounts: Array<AccountMeta> = [];
 
@@ -1448,6 +1457,16 @@ export class StakeForFee {
         unclaimFee: {
           feeA: null,
           feeB: null,
+        },
+      };
+    }
+
+    if (!Boolean(stakeEscrow.inTopList)) {
+      return {
+        stakeEscrow,
+        unclaimFee: {
+          feeA: stakeEscrow.feeAPending,
+          feeB: stakeEscrow.feeBPending,
         },
       };
     }
