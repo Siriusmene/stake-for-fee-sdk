@@ -1018,21 +1018,17 @@ export class StakeForFee {
       preInstructions.push(initializeUserQuoteTokenIx);
 
     const remainingAccounts: Array<AccountMeta> = [];
-    const stakeEscrowState =
-      await this.stakeForFeeProgram.account.stakeEscrow.fetch(stakeEscrowKey);
 
-    if (!Boolean(stakeEscrowState.inTopList)) {
-      const smallestStakeEscrows: Array<AccountMeta> =
-        this.findReplaceableTopStaker(3).map((key) => {
-          return {
-            pubkey: key,
-            isWritable: true,
-            isSigner: false,
-          };
-        });
+    const smallestStakeEscrows: Array<AccountMeta> =
+      this.findReplaceableTopStaker(2).map((key) => {
+        return {
+          pubkey: key,
+          isWritable: true,
+          isSigner: false,
+        };
+      });
 
-      remainingAccounts.push(...smallestStakeEscrows);
-    }
+    remainingAccounts.push(...smallestStakeEscrows);
 
     const smallestStakeEscrow =
       this.findSmallestStakeEscrowInFullBalanceList(owner);
