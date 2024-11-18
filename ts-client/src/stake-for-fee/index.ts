@@ -35,7 +35,6 @@ import {
   deriveLockEscrowPda,
   deriveLpMint,
   deriveStakeEscrow,
-  deriveStakeTokenVault,
   deriveTopStakerList,
 } from "./helpers/pda";
 import {
@@ -355,11 +354,23 @@ export class StakeForFee {
 
     const poolState = await ammProgram.account.pool.fetch(pool);
 
+    const quoteMint = poolState.tokenAMint.equals(stakeMint)
+      ? poolState.tokenBMint
+      : poolState.tokenAMint;
+
     const feeVaultKey = deriveFeeVault(pool, stakeForFeeProgram.programId);
-    const stakeTokenVaultKey = deriveStakeTokenVault(
+    const stakeTokenVaultKey = getAssociatedTokenAddressSync(
+      stakeMint,
       feeVaultKey,
-      stakeForFeeProgram.programId
+      true
     );
+
+    const quoteTokenVaultKey = getAssociatedTokenAddressSync(
+      quoteMint,
+      feeVaultKey,
+      true
+    );
+
     const topStakerListKey = deriveTopStakerList(
       feeVaultKey,
       stakeForFeeProgram.programId
@@ -367,16 +378,6 @@ export class StakeForFee {
     const fullBalanceListKey = deriveFullBalanceList(
       feeVaultKey,
       stakeForFeeProgram.programId
-    );
-    const tokenAVaultKey = getAssociatedTokenAddressSync(
-      poolState.tokenAMint,
-      feeVaultKey,
-      true
-    );
-    const tokenBVaultKey = getAssociatedTokenAddressSync(
-      poolState.tokenBMint,
-      feeVaultKey,
-      true
     );
 
     const [lockEscrowPK] = deriveLockEscrowPda(
@@ -416,15 +417,13 @@ export class StakeForFee {
       })
       .accounts({
         vault: feeVaultKey,
-        stakeTokenVault: stakeTokenVaultKey,
         stakeMint,
+        stakeTokenVault: stakeTokenVaultKey,
+        quoteMint,
+        quoteTokenVault: quoteTokenVaultKey,
         topStakerList: topStakerListKey,
         fullBalanceList: fullBalanceListKey,
-        tokenAMint: poolState.tokenAMint,
-        tokenBMint: poolState.tokenBMint,
         pool,
-        tokenAVault: tokenAVaultKey,
-        tokenBVault: tokenBVaultKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         lockEscrow: lockEscrowPK,
@@ -450,11 +449,10 @@ export class StakeForFee {
    *
    * @param connection Solana connection
    * @param pool The pool to create the fee vault for
-   * @param stakeMint The mint of the stake token
    * @param payer The payer of the transaction. Signer.
    * @param config The configuration account for the fee vault. Get from `getConfigs`
-   * @param tokenAMint The mint of the token A
-   * @param tokenBMint The mint of the token B
+   * @param stakeMint The mint of the stake token. Must be token A/B of the pool.
+   * @param quoteMint The mint of the quote token. Must be token A/B of the pool.
    * @param customStartClaimFeeTimestamp The custom start claim fee timestamp. If not passed, it will default to current timestamp. Else, lock escrow can only claim fee after this timestamp. Constraint: currentTimestamp <= `customStartClaimFeeTimestamp` <= currentTimestamp + configAccount.joinWindowDuration
    * @param opt Optional options
    *
@@ -463,10 +461,9 @@ export class StakeForFee {
   public static async createFeeVaultWithParams(
     connection: Connection,
     pool: PublicKey,
-    stakeMint: PublicKey,
     payer: PublicKey,
-    tokenAMint: PublicKey,
-    tokenBMint: PublicKey,
+    stakeMint: PublicKey,
+    quoteMint: PublicKey,
     param?: Exclude<InitializeVaultParams, "padding">,
     opt?: Opt
   ): Promise<Transaction> {
@@ -481,10 +478,7 @@ export class StakeForFee {
     );
     const feeVaultKey = deriveFeeVault(pool, stakeForFeeProgram.programId);
     const lpMint = deriveLpMint(pool, ammProgram.programId);
-    const stakeTokenVaultKey = deriveStakeTokenVault(
-      feeVaultKey,
-      stakeForFeeProgram.programId
-    );
+
     const topStakerListKey = deriveTopStakerList(
       feeVaultKey,
       stakeForFeeProgram.programId
@@ -493,13 +487,13 @@ export class StakeForFee {
       feeVaultKey,
       stakeForFeeProgram.programId
     );
-    const tokenAVaultKey = getAssociatedTokenAddressSync(
-      tokenAMint,
+    const stakeTokenVaultKey = getAssociatedTokenAddressSync(
+      stakeMint,
       feeVaultKey,
       true
     );
-    const tokenBVaultKey = getAssociatedTokenAddressSync(
-      tokenBMint,
+    const quoteTokenVaultKey = getAssociatedTokenAddressSync(
+      quoteMint,
       feeVaultKey,
       true
     );
@@ -537,14 +531,12 @@ export class StakeForFee {
       .accounts({
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
+        quoteTokenVault: quoteTokenVaultKey,
         stakeMint,
+        quoteMint,
         topStakerList: topStakerListKey,
         fullBalanceList: fullBalanceListKey,
-        tokenAMint,
-        tokenBMint,
         pool,
-        tokenAVault: tokenAVaultKey,
-        tokenBVault: tokenBVaultKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         lockEscrow: lockEscrowPK,
@@ -569,11 +561,10 @@ export class StakeForFee {
    *
    * @param connection Solana connection
    * @param pool The pool to create the fee vault for
-   * @param stakeMint The mint of the stake token
    * @param payer The payer of the transaction. Signer.
    * @param config The configuration account for the fee vault. Get from `getConfigs`
-   * @param tokenAMint The mint of the token A
-   * @param tokenBMint The mint of the token B
+   * @param stakeMint The mint of the stake token. Must be token A/B of the pool.
+   * @param quoteMint The mint of the quote token. Must be token A/B of the pool.
    * @param customStartClaimFeeTimestamp The custom start claim fee timestamp. If not passed, it will default to current timestamp. Else, lock escrow can only claim fee after this timestamp. Constraint: currentTimestamp <= `customStartClaimFeeTimestamp` <= currentTimestamp + configAccount.joinWindowDuration
    * @param opt Optional options
    *
@@ -582,10 +573,9 @@ export class StakeForFee {
   public static async createFeeVaultInstructions(
     connection: Connection,
     pool: PublicKey,
-    stakeMint: PublicKey,
     payer: PublicKey,
-    tokenAMint: PublicKey,
-    tokenBMint: PublicKey,
+    stakeMint: PublicKey,
+    quoteMint: PublicKey,
     param?: Exclude<InitializeVaultParams, "padding">,
     opt?: Opt
   ): Promise<TransactionInstruction[]> {
@@ -600,10 +590,7 @@ export class StakeForFee {
     );
     const feeVaultKey = deriveFeeVault(pool, stakeForFeeProgram.programId);
     const lpMint = deriveLpMint(pool, ammProgram.programId);
-    const stakeTokenVaultKey = deriveStakeTokenVault(
-      feeVaultKey,
-      stakeForFeeProgram.programId
-    );
+
     const topStakerListKey = deriveTopStakerList(
       feeVaultKey,
       stakeForFeeProgram.programId
@@ -612,13 +599,13 @@ export class StakeForFee {
       feeVaultKey,
       stakeForFeeProgram.programId
     );
-    const tokenAVaultKey = getAssociatedTokenAddressSync(
-      tokenAMint,
+    const stakeTokenVaultKey = getAssociatedTokenAddressSync(
+      stakeMint,
       feeVaultKey,
       true
     );
-    const tokenBVaultKey = getAssociatedTokenAddressSync(
-      tokenBMint,
+    const quoteTokenVaultKey = getAssociatedTokenAddressSync(
+      quoteMint,
       feeVaultKey,
       true
     );
@@ -656,14 +643,12 @@ export class StakeForFee {
       .accounts({
         vault: feeVaultKey,
         stakeTokenVault: stakeTokenVaultKey,
+        quoteTokenVault: quoteTokenVaultKey,
         stakeMint,
+        quoteMint,
         topStakerList: topStakerListKey,
         fullBalanceList: fullBalanceListKey,
-        tokenAMint,
-        tokenBMint,
         pool,
-        tokenAVault: tokenAVaultKey,
-        tokenBVault: tokenBVaultKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         lockEscrow: lockEscrowPK,
@@ -954,8 +939,8 @@ export class StakeForFee {
         topStakerList: this.accountStates.feeVault.topStakerList,
         fullBalanceList: this.accountStates.feeVault.fullBalanceList,
         stakeEscrow: stakeEscrowKey,
-        tokenAVault: this.accountStates.feeVault.tokenAVault,
-        tokenBVault: this.accountStates.feeVault.tokenBVault,
+        stakeTokenVault: this.accountStates.feeVault.stakeTokenVault,
+        quoteTokenVault: this.accountStates.feeVault.quoteTokenVault,
         owner,
         pool: this.accountStates.feeVault.pool,
         lpMint: this.accountStates.ammPool.lpMint,
@@ -1041,8 +1026,8 @@ export class StakeForFee {
         fullBalanceList: this.accountStates.feeVault.fullBalanceList,
         topStakerList: this.accountStates.feeVault.topStakerList,
         stakeEscrow: stakeEscrowKey,
-        tokenAVault: this.accountStates.feeVault.tokenAVault,
-        tokenBVault: this.accountStates.feeVault.tokenBVault,
+        stakeTokenVault: this.accountStates.feeVault.stakeTokenVault,
+        quoteTokenVault: this.accountStates.feeVault.quoteTokenVault,
         owner,
         pool: this.accountStates.feeVault.pool,
         lpMint: this.accountStates.ammPool.lpMint,
@@ -1138,13 +1123,12 @@ export class StakeForFee {
       .accounts({
         vault: this.feeVaultKey,
         stakeTokenVault: this.accountStates.feeVault.stakeTokenVault,
+        quoteTokenVault: this.accountStates.feeVault.quoteTokenVault,
         topStakerList: this.accountStates.feeVault.topStakerList,
         fullBalanceList: this.accountStates.feeVault.fullBalanceList,
         stakeEscrow: stakeEscrowKey,
         smallestStakeEscrow,
         userStakeToken: userStakeTokenKey,
-        tokenAVault: this.accountStates.feeVault.tokenAVault,
-        tokenBVault: this.accountStates.feeVault.tokenBVault,
         owner,
         pool: this.accountStates.feeVault.pool,
         lpMint: this.accountStates.ammPool.lpMint,
@@ -1224,8 +1208,8 @@ export class StakeForFee {
         fullBalanceList: this.accountStates.feeVault.fullBalanceList,
         stakeEscrow: stakeEscrowKey,
         smallestStakeEscrow,
-        tokenAVault: this.accountStates.feeVault.tokenAVault,
-        tokenBVault: this.accountStates.feeVault.tokenBVault,
+        stakeTokenVault: this.accountStates.feeVault.stakeTokenVault,
+        quoteTokenVault: this.accountStates.feeVault.quoteTokenVault,
         owner,
         pool: this.accountStates.feeVault.pool,
         lpMint: this.accountStates.ammPool.lpMint,
