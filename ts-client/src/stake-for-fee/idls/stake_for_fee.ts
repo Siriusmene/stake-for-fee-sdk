@@ -18,19 +18,11 @@ export type StakeForFee = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "Stake token vault"
-          ]
-        },
-        {
-          "name": "tokenAVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
             "Token a vault"
           ]
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -62,27 +54,19 @@ export type StakeForFee = {
           ]
         },
         {
-          "name": "tokenAMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "Token a mint of the pool"
-          ]
-        },
-        {
-          "name": "tokenBMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "Token b mint of the pool"
-          ]
-        },
-        {
           "name": "stakeMint",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "Stake mint of the pool"
+            "Stake mint"
+          ]
+        },
+        {
+          "name": "quoteMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Quote mint"
           ]
         },
         {
@@ -198,6 +182,11 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
+          "name": "quoteTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "topStakerList",
           "isMut": true,
           "isSigner": false
@@ -220,16 +209,6 @@ export type StakeForFee = {
         },
         {
           "name": "userStakeToken",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -369,12 +348,12 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -505,12 +484,12 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -652,12 +631,12 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -814,12 +793,12 @@ export type StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -1189,6 +1168,13 @@ export type StakeForFee = {
             "type": "publicKey"
           },
           {
+            "name": "quoteMint",
+            "docs": [
+              "Quote mint"
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "pool",
             "docs": [
               "Pool"
@@ -1203,16 +1189,9 @@ export type StakeForFee = {
             "type": "publicKey"
           },
           {
-            "name": "tokenAVault",
+            "name": "quoteTokenVault",
             "docs": [
-              "Token a vault"
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "tokenBVault",
-            "docs": [
-              "Token b vault"
+              "Quote token vault"
             ],
             "type": "publicKey"
           },
@@ -1325,7 +1304,7 @@ export type StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "startClaimFeeTimestamp",
+            "name": "startFeeDistributeTimestamp",
             "type": {
               "option": "u64"
             }
@@ -1432,9 +1411,9 @@ export type StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "startClaimFeeTimestamp",
+            "name": "startFeeDistributeTimestamp",
             "docs": [
-              "Minimum time to start claim fee from lock escrow"
+              "When the fee start distributes"
             ],
             "type": "i64"
           },
@@ -1674,6 +1653,11 @@ export type StakeForFee = {
           "index": false
         },
         {
+          "name": "quoteMint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
           "name": "creator",
           "type": "publicKey",
           "index": false
@@ -1694,7 +1678,7 @@ export type StakeForFee = {
           "index": false
         },
         {
-          "name": "startClaimFeeTimestamp",
+          "name": "startFeeDistributeTimestamp",
           "type": "i64",
           "index": false
         }
@@ -2294,8 +2278,8 @@ export type StakeForFee = {
     },
     {
       "code": 6007,
-      "name": "InvalidStakeMint",
-      "msg": "Invalid stake mint"
+      "name": "MintDoesNotBelongToPool",
+      "msg": "Mint does not belong to the pool"
     },
     {
       "code": 6008,
@@ -2324,8 +2308,8 @@ export type StakeForFee = {
     },
     {
       "code": 6013,
-      "name": "InvalidCustomStartClaimFeeTimestamp",
-      "msg": "Invalid custom start claim fee timestamp"
+      "name": "InvalidCustomStartFeeDistributeTimestamp",
+      "msg": "Invalid custom start fee distribute timestamp"
     },
     {
       "code": 6014,
@@ -2395,19 +2379,11 @@ export const IDL: StakeForFee = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "Stake token vault"
-          ]
-        },
-        {
-          "name": "tokenAVault",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
             "Token a vault"
           ]
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -2439,27 +2415,19 @@ export const IDL: StakeForFee = {
           ]
         },
         {
-          "name": "tokenAMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "Token a mint of the pool"
-          ]
-        },
-        {
-          "name": "tokenBMint",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "Token b mint of the pool"
-          ]
-        },
-        {
           "name": "stakeMint",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "Stake mint of the pool"
+            "Stake mint"
+          ]
+        },
+        {
+          "name": "quoteMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Quote mint"
           ]
         },
         {
@@ -2575,6 +2543,11 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
+          "name": "quoteTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "topStakerList",
           "isMut": true,
           "isSigner": false
@@ -2597,16 +2570,6 @@ export const IDL: StakeForFee = {
         },
         {
           "name": "userStakeToken",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenBVault",
           "isMut": true,
           "isSigner": false
         },
@@ -2746,12 +2709,12 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -2882,12 +2845,12 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -3029,12 +2992,12 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -3191,12 +3154,12 @@ export const IDL: StakeForFee = {
           "isSigner": false
         },
         {
-          "name": "tokenAVault",
+          "name": "stakeTokenVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "tokenBVault",
+          "name": "quoteTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -3566,6 +3529,13 @@ export const IDL: StakeForFee = {
             "type": "publicKey"
           },
           {
+            "name": "quoteMint",
+            "docs": [
+              "Quote mint"
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "pool",
             "docs": [
               "Pool"
@@ -3580,16 +3550,9 @@ export const IDL: StakeForFee = {
             "type": "publicKey"
           },
           {
-            "name": "tokenAVault",
+            "name": "quoteTokenVault",
             "docs": [
-              "Token a vault"
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "tokenBVault",
-            "docs": [
-              "Token b vault"
+              "Quote token vault"
             ],
             "type": "publicKey"
           },
@@ -3702,7 +3665,7 @@ export const IDL: StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "startClaimFeeTimestamp",
+            "name": "startFeeDistributeTimestamp",
             "type": {
               "option": "u64"
             }
@@ -3809,9 +3772,9 @@ export const IDL: StakeForFee = {
             "type": "u64"
           },
           {
-            "name": "startClaimFeeTimestamp",
+            "name": "startFeeDistributeTimestamp",
             "docs": [
-              "Minimum time to start claim fee from lock escrow"
+              "When the fee start distributes"
             ],
             "type": "i64"
           },
@@ -4051,6 +4014,11 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
+          "name": "quoteMint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
           "name": "creator",
           "type": "publicKey",
           "index": false
@@ -4071,7 +4039,7 @@ export const IDL: StakeForFee = {
           "index": false
         },
         {
-          "name": "startClaimFeeTimestamp",
+          "name": "startFeeDistributeTimestamp",
           "type": "i64",
           "index": false
         }
@@ -4671,8 +4639,8 @@ export const IDL: StakeForFee = {
     },
     {
       "code": 6007,
-      "name": "InvalidStakeMint",
-      "msg": "Invalid stake mint"
+      "name": "MintDoesNotBelongToPool",
+      "msg": "Mint does not belong to the pool"
     },
     {
       "code": 6008,
@@ -4701,8 +4669,8 @@ export const IDL: StakeForFee = {
     },
     {
       "code": 6013,
-      "name": "InvalidCustomStartClaimFeeTimestamp",
-      "msg": "Invalid custom start claim fee timestamp"
+      "name": "InvalidCustomStartFeeDistributeTimestamp",
+      "msg": "Invalid custom start fee distribute timestamp"
     },
     {
       "code": 6014,

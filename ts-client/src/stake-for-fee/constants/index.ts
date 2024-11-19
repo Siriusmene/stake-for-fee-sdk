@@ -2,7 +2,7 @@ import { PublicKey } from "@solana/web3.js";
 import { BN } from "bn.js";
 
 export const STAKE_FOR_FEE_PROGRAM_ID = new PublicKey(
-  "FEEHYhjjfkBeHqb3D1yxY3gYeNa96uYpUZvRhV6cC1N8"
+  "FEESngU3neckdwib9X3KWqdL7Mjmqk9XNp3uh5JbP4KP"
 );
 
 export const DYNAMIC_AMM_PROGRAM_ID = new PublicKey(

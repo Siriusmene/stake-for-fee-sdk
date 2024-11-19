@@ -19,16 +19,6 @@ export const deriveFeeVault = (pool: PublicKey, programId: PublicKey) => {
   )[0];
 };
 
-export const deriveStakeTokenVault = (
-  vault: PublicKey,
-  programId: PublicKey
-) => {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("stake_vault"), vault.toBytes()],
-    programId
-  )[0];
-};
-
 export const deriveTopStakerList = (vault: PublicKey, programId: PublicKey) => {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("list"), vault.toBytes()],
@@ -57,13 +47,9 @@ export const deriveStakeEscrow = (
   )[0];
 };
 
-export const deriveLpMint = (
-  poolAddress: PublicKey,
-  programId: PublicKey
-) => {
+export const deriveLpMint = (poolAddress: PublicKey, programId: PublicKey) => {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("lp_mint"), poolAddress.toBuffer()],
     new PublicKey(programId || DYNAMIC_AMM_PROGRAM_ID)
   )[0];
 };
-

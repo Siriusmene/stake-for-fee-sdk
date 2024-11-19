@@ -74,14 +74,7 @@ export function getLockedEscrowPendingFee(
     feeVault.topStakerInfo.lastClaimFeeAt
   );
 
-  const firstClaimFeeExecuted = feeVault.topStakerInfo.lastClaimFeeAt.gt(
-    feeVault.configuration.startClaimFeeTimestamp
-  );
-
-  if (
-    firstClaimFeeExecuted &&
-    secondsElapsedSinceLastClaim.lt(MIN_LOCK_ESCROW_CLAIM_FEE_DURATION)
-  ) {
+  if (secondsElapsedSinceLastClaim.lt(MIN_LOCK_ESCROW_CLAIM_FEE_DURATION)) {
     return [new BN(0), new BN(0)];
   }
 
