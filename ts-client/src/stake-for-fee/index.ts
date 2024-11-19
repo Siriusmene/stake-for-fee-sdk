@@ -1456,12 +1456,14 @@ export class StakeForFee {
     const effectiveStakeAmount =
       this.accountStates.feeVault.topStakerInfo.effectiveStakeAmount;
 
-    const newFeeAPerLiquidity = effectiveStakeAmount.isZero()
-      ? new BN(0)
-      : releasedFeeA.shln(64).div(effectiveStakeAmount);
-    const newFeeBPerLiquidity = effectiveStakeAmount.isZero()
-      ? new BN(0)
-      : releasedFeeB.shln(64).div(effectiveStakeAmount);
+    const newFeeAPerLiquidity =
+      releasedFeeA.isNeg() || effectiveStakeAmount.isZero()
+        ? new BN(0)
+        : releasedFeeA.shln(64).div(effectiveStakeAmount);
+    const newFeeBPerLiquidity =
+      releasedFeeB.isNeg() || effectiveStakeAmount.isZero()
+        ? new BN(0)
+        : releasedFeeB.shln(64).div(effectiveStakeAmount);
 
     const newCumulativeFeeAPerLiquidity =
       this.accountStates.feeVault.topStakerInfo.cumulativeFeeAPerLiquidity.add(
