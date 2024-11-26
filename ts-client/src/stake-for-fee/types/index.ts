@@ -29,6 +29,7 @@ export interface AccountStates {
 // Stake for fee program
 export type StakeForFeeProgram = Program<StakeForFee>;
 export type FeeVault = IdlAccounts<StakeForFee>["feeVault"];
+export type Unstake = IdlAccounts<StakeForFee>["unstake"];
 export type FullBalanceListMetadata =
   IdlAccounts<StakeForFee>["fullBalanceListMetadata"];
 export type StakeEscrow = IdlAccounts<StakeForFee>["stakeEscrow"];

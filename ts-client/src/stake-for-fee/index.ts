@@ -1288,7 +1288,7 @@ export class StakeForFee {
     return stakeEscrow.map((stake, index) => {
       const vault = vaults[index];
       const unstake = unstakeList.find(({ account: { stakeEscrow } }) => stakeEscrow.equals(stake.publicKey));
-      return { stake: stake.account, vault, unstake };
+      return { stake: stake.account, vault, unstake: unstake.account };
     });
   }
 
