@@ -1278,7 +1278,7 @@ export class StakeForFee {
         { memcmp: { offset: 8, bytes: owner.toBase58() } }
       ]), 
       stakeForFeeProgram.account.unstake.all([
-        { memcmp: { offset: 8 + (32 * 4), bytes: owner.toBase58() } }
+        { memcmp: { offset: 8 + 32 + (8 * 3), bytes: owner.toBase58() } }
       ])
     ]);
     const vaultsKey = stakeEscrow.map((stake) => stake.account.vault);
@@ -1287,7 +1287,7 @@ export class StakeForFee {
     );
     return stakeEscrow.map((stake, index) => {
       const vault = vaults[index];
-      const unstake = unstakeList.map(({ account }) => account);
+      const unstake = unstakeList.filter(({ account }) => account.stakeEscrow.equals(stake.publicKey)).map(({ account }) => account);
       return { stake: stake.account, vault, unstake };
     });
   }
