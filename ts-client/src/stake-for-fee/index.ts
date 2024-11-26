@@ -1273,8 +1273,13 @@ export class StakeForFee {
       STAKE_FOR_FEE_PROGRAM_ID
     );
 
-    const stakeEscrow = await stakeForFeeProgram.account.stakeEscrow.all([
-      { memcmp: { offset: 8, bytes: owner.toBase58() } },
+    const [stakeEscrow, unstakeList] = await Promise.all([
+      stakeForFeeProgram.account.stakeEscrow.all([
+        { memcmp: { offset: 8, bytes: owner.toBase58() } }
+      ]), 
+      stakeForFeeProgram.account.unstake.all([
+        { memcmp: { offset: 8 + (32 * 4), bytes: owner.toBase58() } }
+      ])
     ]);
     const vaultsKey = stakeEscrow.map((stake) => stake.account.vault);
     const vaults = await stakeForFeeProgram.account.feeVault.fetchMultiple(
@@ -1282,7 +1287,8 @@ export class StakeForFee {
     );
     return stakeEscrow.map((stake, index) => {
       const vault = vaults[index];
-      return { stake: stake.account, vault };
+      const unstake = unstakeList.find(({ account: { stakeEscrow } }) => stakeEscrow.equals(stake.publicKey));
+      return { stake: stake.account, vault, unstake };
     });
   }
 
