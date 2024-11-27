@@ -1,5 +1,5 @@
 export type StakeForFee = {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "stake_for_fee",
   "instructions": [
     {
@@ -1137,11 +1137,25 @@ export type StakeForFee = {
             "type": "i64"
           },
           {
+            "name": "owner",
+            "docs": [
+              "owner field, only be used for indexing"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "vault",
+            "docs": [
+              "vault field, only be used for indexing"
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u64",
-                30
+                22
               ]
             }
           }
@@ -2360,7 +2374,7 @@ export type StakeForFee = {
 };
 
 export const IDL: StakeForFee = {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "stake_for_fee",
   "instructions": [
     {
@@ -3498,11 +3512,25 @@ export const IDL: StakeForFee = {
             "type": "i64"
           },
           {
+            "name": "owner",
+            "docs": [
+              "owner field, only be used for indexing"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "vault",
+            "docs": [
+              "vault field, only be used for indexing"
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u64",
-                30
+                22
               ]
             }
           }
