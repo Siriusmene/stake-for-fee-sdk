@@ -20,7 +20,7 @@ Discord: https://discord.com/channels/841152225564950528/864859354335412224
 1. Install deps
 
 ```
-npm i @meteora-ag/m3m3 @project-serum/anchor @solana/web3.js @solana/spl-token @solana/spl-token-registry
+npm i @meteora-ag/m3m3 @coral-xyz/anchor @solana/web3.js @solana/spl-token @solana/spl-token-registry
 ```
 
 2. Initialize StakeForFee instance

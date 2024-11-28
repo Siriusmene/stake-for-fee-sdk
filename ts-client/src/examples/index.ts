@@ -22,7 +22,7 @@ const mintANativeAmountMultiplier = 10 ** mintADecimal;
 const mintAmount = 10_000;
 const stakeFarmAmount = 1_000;
 
-async function createPoolAndFeeVaultExample() {
+async function createPoolAndInteractWithFeeVaultExample() {
   const keypair = loadKeypairFromFile(DEFAULT_KEYPAIR_PATH);
   console.log(`Wallet ${keypair.publicKey} connected`);
 
@@ -160,6 +160,6 @@ async function createPoolAndFeeVaultExample() {
   console.log("Withdraw Unstake Signature", withdrawUnstakeSignature);
 }
 
-createPoolAndFeeVaultExample()
+createPoolAndInteractWithFeeVaultExample()
   .then(() => console.log("Done"))
   .catch(console.error);
