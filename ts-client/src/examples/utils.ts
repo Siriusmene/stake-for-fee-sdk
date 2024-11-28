@@ -8,6 +8,7 @@ import {
 import {
   Connection,
   Keypair,
+  Signer,
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
@@ -82,7 +83,7 @@ export async function initializeMintAndMint(
     skipPreflight: true,
   });
 
-  console.log("Signature", signature);
+  console.log("Create Mint Signature", signature);
   await connection.confirmTransaction({
     signature,
     lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
@@ -92,5 +93,22 @@ export async function initializeMintAndMint(
   return mintKeypair.publicKey;
 }
 
+export async function handleSendTransaction(
+  connection: Connection,
+  tx: Transaction,
+  signer: Signer | Signer[]
+) {
+  const signers = Array.isArray(signer) ? signer : [signer];
+  tx.sign(...signers);
+  const signature = await connection.sendRawTransaction(tx.serialize());
+  await connection.confirmTransaction({
+    signature,
+    blockhash: tx.recentBlockhash,
+    lastValidBlockHeight: tx.lastValidBlockHeight,
+  });
+
+  return signature;
+}
+
 export const DEVNET_URL = "https://api.devnet.solana.com";
-export const DEFAULT_KEYPAIR_PATH = `${process.env.HOME}/.config/solana/id.json`;
+export const DEFAULT_KEYPAIR_PATH = `${process.env.HOME}/.config/solana/key.json`;

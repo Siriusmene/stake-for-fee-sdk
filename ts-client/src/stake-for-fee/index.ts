@@ -430,7 +430,7 @@ export class StakeForFee {
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
-      await connection.getLatestBlockhash("confirmed");
+      await connection.getLatestBlockhash();
 
     return new Transaction({
       blockhash,
@@ -542,7 +542,7 @@ export class StakeForFee {
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
-      await connection.getLatestBlockhash("confirmed");
+      await connection.getLatestBlockhash();
 
     return new Transaction({
       blockhash,
@@ -684,7 +684,7 @@ export class StakeForFee {
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash("confirmed");
+      await this.connection.getLatestBlockhash();
 
     return new Transaction({
       blockhash,
@@ -873,7 +873,7 @@ export class StakeForFee {
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash("confirmed");
+      await this.connection.getLatestBlockhash();
 
     return new Transaction({
       blockhash,
@@ -955,7 +955,7 @@ export class StakeForFee {
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash("confirmed");
+      await this.connection.getLatestBlockhash();
 
     return new Transaction({
       blockhash,
@@ -1045,7 +1045,7 @@ export class StakeForFee {
     transactionArray.push(claimTx);
 
     const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash("confirmed");
+      await this.connection.getLatestBlockhash();
     return transactionArray.map((tx) =>
       new Transaction({
         blockhash,
@@ -1143,7 +1143,7 @@ export class StakeForFee {
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash("confirmed");
+      await this.connection.getLatestBlockhash();
 
     return new Transaction({
       blockhash,
@@ -1224,7 +1224,7 @@ export class StakeForFee {
       .transaction();
 
     const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash("confirmed");
+      await this.connection.getLatestBlockhash();
 
     return new Transaction({
       blockhash,
@@ -1275,11 +1275,11 @@ export class StakeForFee {
 
     const [stakeEscrow, unstakeList] = await Promise.all([
       stakeForFeeProgram.account.stakeEscrow.all([
-        { memcmp: { offset: 8, bytes: owner.toBase58() } }
-      ]), 
+        { memcmp: { offset: 8, bytes: owner.toBase58() } },
+      ]),
       stakeForFeeProgram.account.unstake.all([
-        { memcmp: { offset: 8 + 32 + (8 * 3), bytes: owner.toBase58() } }
-      ])
+        { memcmp: { offset: 8 + 32 + 8 * 3, bytes: owner.toBase58() } },
+      ]),
     ]);
     const vaultsKey = stakeEscrow.map((stake) => stake.account.vault);
     const vaults = await stakeForFeeProgram.account.feeVault.fetchMultiple(
@@ -1287,7 +1287,9 @@ export class StakeForFee {
     );
     return stakeEscrow.map((stake, index) => {
       const vault = vaults[index];
-      const unstake = unstakeList.filter(({ account }) => account.stakeEscrow.equals(stake.publicKey)).map(({ account }) => account);
+      const unstake = unstakeList
+        .filter(({ account }) => account.stakeEscrow.equals(stake.publicKey))
+        .map(({ account }) => account);
       return { stake: stake.account, vault, unstake };
     });
   }
