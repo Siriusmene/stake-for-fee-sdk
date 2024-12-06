@@ -65,7 +65,7 @@ import {
   StakerMetadata,
   TopStakerListState,
 } from "./types";
-import { computeUnitIx } from "./helpers/tx";
+import { computeUnitIx, unwrapSOLInstruction } from "./helpers/tx";
 import { COMPUTE_UNIT } from "./constants/compute";
 
 type Opt = {
@@ -940,6 +940,8 @@ export class StakeForFee {
     const smallestStakeEscrow =
       this.findSmallestStakeEscrowInFullBalanceList(owner);
 
+    const postInstructions = [await unwrapSOLInstruction(owner)];
+
     const claimTx = await this.stakeForFeeProgram.methods
       .claimFee(maxFee)
       .accounts({
@@ -969,6 +971,7 @@ export class StakeForFee {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
       .remainingAccounts(remainingAccounts)
       .transaction();
 
