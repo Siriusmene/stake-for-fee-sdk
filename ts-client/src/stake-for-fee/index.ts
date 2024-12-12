@@ -67,6 +67,7 @@ import {
 } from "./types";
 import { computeUnitIx, unwrapSOLInstruction } from "./helpers/tx";
 import { COMPUTE_UNIT } from "./constants/compute";
+import { getSimulationComputeUnits } from "@solana-developers/helpers";
 
 type Opt = {
   stakeForFeeProgramId?: PublicKey;
@@ -850,9 +851,6 @@ export class StakeForFee {
       remainingAccounts.push(...candidateToEnterTopList);
     }
 
-    const preInstructions: Array<TransactionInstruction> = [
-      computeUnitIx(COMPUTE_UNIT.UNSTAKE),
-    ];
     const transaction = await this.stakeForFeeProgram.methods
       .requestUnstake(amount)
       .accounts({
@@ -881,11 +879,14 @@ export class StakeForFee {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .remainingAccounts(remainingAccounts)
-      .preInstructions(preInstructions)
       .transaction();
 
-    const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash();
+    const [{ blockhash, lastValidBlockHeight }, simulatedUnits] =
+      await Promise.all([
+        this.connection.getLatestBlockhash(), 
+        getSimulationComputeUnits(this.stakeForFeeProgram.provider.connection, transaction.instructions, owner, [])
+      ]);
+    transaction.instructions.unshift(computeUnitIx(simulatedUnits + 10_000));
 
     return new Transaction({
       blockhash,
