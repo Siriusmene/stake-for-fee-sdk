@@ -56,7 +56,7 @@ export const getEstimatedComputeUnitUsageWithBuffer = async (
         buffer
       ).catch((error) => {
         console.error("Error::getEstimatedComputeUnitUsageWithBuffer", error);
-        return 1_400_000;
+        return 400_000;
       });
     
       return ComputeBudgetProgram.setComputeUnitLimit({ units });
