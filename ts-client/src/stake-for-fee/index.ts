@@ -66,8 +66,8 @@ import {
   TopStakerListState,
 } from "./types";
 import { computeUnitIx, unwrapSOLInstruction } from "./helpers/tx";
-import { COMPUTE_UNIT } from "./constants/compute";
 import { getSimulationComputeUnits } from "@solana-developers/helpers";
+import { getEstimatedComputeUnitIxWithBuffer } from "./helpers/compute";
 
 type Opt = {
   stakeForFeeProgramId?: PublicKey;
@@ -881,12 +881,16 @@ export class StakeForFee {
       .remainingAccounts(remainingAccounts)
       .transaction();
 
-    const [{ blockhash, lastValidBlockHeight }, simulatedUnits] =
+    const [{ blockhash, lastValidBlockHeight }, setCUIx] =
       await Promise.all([
         this.connection.getLatestBlockhash(), 
-        getSimulationComputeUnits(this.stakeForFeeProgram.provider.connection, transaction.instructions, owner, [])
+        getEstimatedComputeUnitIxWithBuffer(
+          this.stakeForFeeProgram.provider.connection,
+          transaction.instructions,
+          owner,
+        )
       ]);
-    transaction.instructions.unshift(computeUnitIx(simulatedUnits + 10_000));
+    transaction.instructions.unshift(setCUIx);
 
     return new Transaction({
       blockhash,
@@ -903,7 +907,7 @@ export class StakeForFee {
    * @param maxFee Max fee
    * @returns Transaction
    */
-  public async claimFee(owner: PublicKey, maxFee: BN): Promise<Transaction[]> {
+  public async claimFee(owner: PublicKey, maxFee: BN): Promise<Transaction> {
     const stakeEscrowKey = deriveStakeEscrow(
       this.feeVaultKey,
       owner,
@@ -916,8 +920,7 @@ export class StakeForFee {
       ? this.accountStates.ammPool.tokenBMint
       : this.accountStates.ammPool.tokenAMint;
 
-    const transactionArray: Transaction[] = [];
-    const preInstructions = [computeUnitIx(COMPUTE_UNIT.CLAIM)];
+    const preInstructions = [];
 
     const { ataPubKey: userQuoteToken, ix: initializeUserQuoteTokenIx } =
       await getOrCreateATAInstruction(this.connection, quoteTokenMint, owner);
@@ -943,7 +946,7 @@ export class StakeForFee {
 
     const postInstructions = [await unwrapSOLInstruction(owner)];
 
-    const claimTx = await this.stakeForFeeProgram.methods
+    const transaction = await this.stakeForFeeProgram.methods
       .claimFee(maxFee)
       .accounts({
         userQuoteToken,
@@ -976,17 +979,22 @@ export class StakeForFee {
       .remainingAccounts(remainingAccounts)
       .transaction();
 
-    transactionArray.push(claimTx);
+      const [{ blockhash, lastValidBlockHeight }, setCUIx] =
+      await Promise.all([
+        this.connection.getLatestBlockhash(), 
+        getEstimatedComputeUnitIxWithBuffer(
+          this.stakeForFeeProgram.provider.connection,
+          transaction.instructions,
+          owner,
+        )
+      ]);
+    transaction.instructions.unshift(setCUIx);
 
-    const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash();
-    return transactionArray.map((tx) =>
-      new Transaction({
+    return new Transaction({
         blockhash,
         lastValidBlockHeight,
         feePayer: owner,
-      }).add(tx)
-    );
+      }).add(transaction);
   }
 
   /**
@@ -1010,9 +1018,7 @@ export class StakeForFee {
         "replaceableTopStakerCount must be less than or equal to 2"
       );
     }
-    const preInstructions: Array<TransactionInstruction> = [
-      computeUnitIx(COMPUTE_UNIT.STAKE),
-    ];
+    const preInstructions: Array<TransactionInstruction> = [];
     const { stakeEscrowKey, ix: initializeStakeEscrowIx } =
       await getOrCreateStakeEscrowInstruction(
         this.connection,
@@ -1076,8 +1082,16 @@ export class StakeForFee {
       .remainingAccounts(remainingAccounts)
       .transaction();
 
-    const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash();
+      const [{ blockhash, lastValidBlockHeight }, setCUIx] =
+      await Promise.all([
+        this.connection.getLatestBlockhash(), 
+        getEstimatedComputeUnitIxWithBuffer(
+          this.stakeForFeeProgram.provider.connection,
+          transaction.instructions,
+          owner,
+        )
+      ]);
+    transaction.instructions.unshift(setCUIx);
 
     return new Transaction({
       blockhash,
@@ -1122,9 +1136,7 @@ export class StakeForFee {
     const smallestStakeEscrow =
       this.findSmallestStakeEscrowInFullBalanceList(owner);
 
-    const preInstructions: Array<TransactionInstruction> = [
-      computeUnitIx(COMPUTE_UNIT.CANCEL_UNSTAKE),
-    ];
+    const preInstructions: Array<TransactionInstruction> = [];
     const transaction = await this.stakeForFeeProgram.methods
       .cancelUnstake()
       .accounts({
@@ -1157,8 +1169,16 @@ export class StakeForFee {
       .preInstructions(preInstructions)
       .transaction();
 
-    const { blockhash, lastValidBlockHeight } =
-      await this.connection.getLatestBlockhash();
+      const [{ blockhash, lastValidBlockHeight }, setCUIx] =
+      await Promise.all([
+        this.connection.getLatestBlockhash(), 
+        getEstimatedComputeUnitIxWithBuffer(
+          this.stakeForFeeProgram.provider.connection,
+          transaction.instructions,
+          owner,
+        )
+      ]);
+    transaction.instructions.unshift(setCUIx);
 
     return new Transaction({
       blockhash,
