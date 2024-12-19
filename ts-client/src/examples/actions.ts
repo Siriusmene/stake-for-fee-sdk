@@ -103,9 +103,9 @@ export async function lockLiquidityToFeeVault(
     lockAmount,
     keypair.publicKey,
     {
-        stakeLiquidity: {
-            percent: new Decimal(100),
-        }
+      stakeLiquidity: {
+        ratio: new Decimal(1), // 0 to 1; 1 means 100%
+      },
     }
   );
 
