@@ -881,15 +881,14 @@ export class StakeForFee {
       .remainingAccounts(remainingAccounts)
       .transaction();
 
-    const [{ blockhash, lastValidBlockHeight }, setCUIx] =
-      await Promise.all([
-        this.connection.getLatestBlockhash(), 
-        getEstimatedComputeUnitIxWithBuffer(
-          this.stakeForFeeProgram.provider.connection,
-          transaction.instructions,
-          owner,
-        )
-      ]);
+    const [{ blockhash, lastValidBlockHeight }, setCUIx] = await Promise.all([
+      this.connection.getLatestBlockhash(),
+      getEstimatedComputeUnitIxWithBuffer(
+        this.stakeForFeeProgram.provider.connection,
+        transaction.instructions,
+        owner
+      ),
+    ]);
     transaction.instructions.unshift(setCUIx);
 
     return new Transaction({
@@ -979,22 +978,21 @@ export class StakeForFee {
       .remainingAccounts(remainingAccounts)
       .transaction();
 
-      const [{ blockhash, lastValidBlockHeight }, setCUIx] =
-      await Promise.all([
-        this.connection.getLatestBlockhash(), 
-        getEstimatedComputeUnitIxWithBuffer(
-          this.stakeForFeeProgram.provider.connection,
-          transaction.instructions,
-          owner,
-        )
-      ]);
+    const [{ blockhash, lastValidBlockHeight }, setCUIx] = await Promise.all([
+      this.connection.getLatestBlockhash(),
+      getEstimatedComputeUnitIxWithBuffer(
+        this.stakeForFeeProgram.provider.connection,
+        transaction.instructions,
+        owner
+      ),
+    ]);
     transaction.instructions.unshift(setCUIx);
 
     return new Transaction({
-        blockhash,
-        lastValidBlockHeight,
-        feePayer: owner,
-      }).add(transaction);
+      blockhash,
+      lastValidBlockHeight,
+      feePayer: owner,
+    }).add(transaction);
   }
 
   /**
@@ -1082,15 +1080,14 @@ export class StakeForFee {
       .remainingAccounts(remainingAccounts)
       .transaction();
 
-      const [{ blockhash, lastValidBlockHeight }, setCUIx] =
-      await Promise.all([
-        this.connection.getLatestBlockhash(), 
-        getEstimatedComputeUnitIxWithBuffer(
-          this.stakeForFeeProgram.provider.connection,
-          transaction.instructions,
-          owner,
-        )
-      ]);
+    const [{ blockhash, lastValidBlockHeight }, setCUIx] = await Promise.all([
+      this.connection.getLatestBlockhash(),
+      getEstimatedComputeUnitIxWithBuffer(
+        this.stakeForFeeProgram.provider.connection,
+        transaction.instructions,
+        owner
+      ),
+    ]);
     transaction.instructions.unshift(setCUIx);
 
     return new Transaction({
@@ -1169,15 +1166,14 @@ export class StakeForFee {
       .preInstructions(preInstructions)
       .transaction();
 
-      const [{ blockhash, lastValidBlockHeight }, setCUIx] =
-      await Promise.all([
-        this.connection.getLatestBlockhash(), 
-        getEstimatedComputeUnitIxWithBuffer(
-          this.stakeForFeeProgram.provider.connection,
-          transaction.instructions,
-          owner,
-        )
-      ]);
+    const [{ blockhash, lastValidBlockHeight }, setCUIx] = await Promise.all([
+      this.connection.getLatestBlockhash(),
+      getEstimatedComputeUnitIxWithBuffer(
+        this.stakeForFeeProgram.provider.connection,
+        transaction.instructions,
+        owner
+      ),
+    ]);
     transaction.instructions.unshift(setCUIx);
 
     return new Transaction({
@@ -1244,7 +1240,11 @@ export class StakeForFee {
       const unstake = unstakeList
         .filter(({ account }) => account.stakeEscrow.equals(stake.publicKey))
         .map(({ account }) => account);
-      return { stake: stake.account, vault, unstake };
+      const unclaimFee = {
+        feeA: stake.account.feeAPending,
+        feeB: stake.account.feeBPending,
+      };
+      return { stake: stake.account, vault, unstake, unclaimFee };
     });
   }
 
