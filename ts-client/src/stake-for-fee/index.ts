@@ -22,6 +22,7 @@ import {
   DYNAMIC_VAULT_PROGRAM_ID,
   STAKE_FOR_FEE_PROGRAM_ID,
   U64_MAX,
+  VAULT_WITH_NON_PDA_BASED_LP_MINTS,
 } from "./constants";
 import {
   decodeFullBalanceState,
@@ -66,6 +67,7 @@ import {
 } from "./types";
 import { unwrapSOLInstruction } from "./helpers/tx";
 import { getEstimatedComputeUnitIxWithBuffer } from "./helpers/compute";
+import { chunks } from "@mercurial-finance/dynamic-amm-sdk/dist/cjs/src/amm/utils";
 
 type Opt = {
   stakeForFeeProgramId?: PublicKey;
@@ -1223,6 +1225,14 @@ export class StakeForFee {
       connection,
       STAKE_FOR_FEE_PROGRAM_ID
     );
+    const dynamicAmmProgram = createDynamicAmmProgram(
+      connection,
+      opt?.dynamicAmmProgramId ?? DYNAMIC_AMM_PROGRAM_ID
+    );
+    const dynamicVaultProgram = createDynamicVaultProgram(
+      connection,
+      opt?.dynamicVaultProgramId ?? DYNAMIC_VAULT_PROGRAM_ID
+    );
 
     const [stakeEscrows, unstakeList] = await Promise.all([
       stakeForFeeProgram.account.stakeEscrow.all([
@@ -1255,11 +1265,23 @@ export class StakeForFee {
       }
     });
 
-    const accounts = await connection.getMultipleAccountsInfo([
-      SYSVAR_CLOCK_PUBKEY,
-      ...poolsToFetch,
-      ...lockEscrowToFetch,
-    ]);
+    const vaultWithNonPdaBasedLpMintsArray = Array.from(
+      VAULT_WITH_NON_PDA_BASED_LP_MINTS.values()
+    );
+    const vaultLpMintsToFetch = vaultWithNonPdaBasedLpMintsArray.map(
+      (mint) => new PublicKey(mint)
+    );
+    const chunkedAccountToFetch = chunks(
+      [SYSVAR_CLOCK_PUBKEY, ...poolsToFetch, ...lockEscrowToFetch],
+      100
+    );
+    const accounts = (
+      await Promise.all(
+        chunkedAccountToFetch.map((accounts) =>
+          connection.getMultipleAccountsInfo(accounts)
+        )
+      )
+    ).flat();
 
     const clockAccountBuffer = accounts[0];
     const poolAccountsBuffer = accounts.slice(1, poolsToFetch.length + 1);
@@ -1269,11 +1291,6 @@ export class StakeForFee {
     );
 
     const clockState: Clock = ClockLayout.decode(clockAccountBuffer.data);
-
-    const dynamicAmmProgram = createDynamicAmmProgram(
-      connection,
-      opt?.dynamicAmmProgramId ?? DYNAMIC_AMM_PROGRAM_ID
-    );
     const poolAccountsMap: Map<string, DynamicPool> = poolAccountsBuffer
       .map((account) =>
         dynamicAmmProgram.coder.accounts.decode("pool", account.data)
@@ -1291,23 +1308,45 @@ export class StakeForFee {
         return acc;
       }, new Map<string, LockEscrow>());
 
-    const poolAccountsToFetch = Array.from(poolAccountsMap.values()).flatMap(
-      ({ aVault, aVaultLp, bVault, bVaultLp, lpMint }) => [
-        aVault,
-        aVaultLp,
-        bVault,
-        bVaultLp,
-        lpMint,
-      ]
-    );
+    const poolAccountsToFetch = chunks(
+      Array.from(poolAccountsMap.values()).flatMap(
+        ({ aVault, aVaultLp, bVault, bVaultLp, lpMint }) => {
+          const aVaultLpMint =
+            VAULT_WITH_NON_PDA_BASED_LP_MINTS.get(aVault.toBase58()) ??
+            PublicKey.findProgramAddressSync(
+              [Buffer.from("lp_mint"), aVault.toBuffer()],
+              dynamicVaultProgram.programId
+            )[0];
+          const bVaultLpMint =
+            VAULT_WITH_NON_PDA_BASED_LP_MINTS.get(bVault.toBase58()) ??
+            PublicKey.findProgramAddressSync(
+              [Buffer.from("lp_mint"), bVault.toBuffer()],
+              dynamicVaultProgram.programId
+            )[0];
 
-    const poolLpAccounts = await connection.getMultipleAccountsInfo(
-      poolAccountsToFetch
+          return [
+            aVault,
+            aVaultLp,
+            aVaultLpMint,
+            bVault,
+            bVaultLp,
+            bVaultLpMint,
+            lpMint,
+          ];
+        }
+      ),
+      100
     );
-    const dynamicVaultProgram = createDynamicVaultProgram(
-      connection,
-      opt?.dynamicVaultProgramId ?? DYNAMIC_VAULT_PROGRAM_ID
-    );
+    console.log('🚀 ~ StakeForFee ~ poolAccountsToFetch:', poolAccountsToFetch);
+
+    const poolLpAccounts = (
+      await Promise.all(
+        poolAccountsToFetch.map((accounts) =>
+          connection.getMultipleAccountsInfo(accounts)
+        )
+      )
+    ).flat();
+    console.log('🚀 ~ StakeForFee ~ poolLpAccounts:', poolLpAccounts);
     const poolInfoAccountsMap = new Map<
       string,
       {
@@ -1315,17 +1354,30 @@ export class StakeForFee {
         bVault: DynamicVault;
         aVaultLp: RawAccount;
         bVaultLp: RawAccount;
+        aVaultLpMint: RawMint;
+        bVaultLpMint: RawMint;
         poolLpMint: RawMint;
       }
     >();
-    for (let i = 0; i < poolLpAccounts.length; i += 5) {
+    for (let i = 0; i < poolLpAccounts.length; i += 7) {
       const [
         aVaultAccountBuffer,
         aVaultLpAccountBuffer,
+        aVaultLpMintAccountBuffer,
         bVaultAccountBuffer,
         bVaultLpAccountBuffer,
+        bVaultLpMintAccountBuffer,
         lpMintAccountBuffer,
-      ] = poolLpAccounts.slice(i, i + 5);
+      ] = poolLpAccounts.slice(i, i + 7);
+      console.log([
+        aVaultAccountBuffer,
+        aVaultLpAccountBuffer,
+        aVaultLpMintAccountBuffer,
+        bVaultAccountBuffer,
+        bVaultLpAccountBuffer,
+        bVaultLpMintAccountBuffer,
+        lpMintAccountBuffer,
+      ]);
       const aVault: DynamicVault = dynamicVaultProgram.coder.accounts.decode(
         "vault",
         aVaultAccountBuffer.data
@@ -1348,44 +1400,21 @@ export class StakeForFee {
         new Uint8Array(lpMintAccountBuffer.data)
       );
 
-      poolInfoAccountsMap.set(poolsToFetch[i / 5].toBase58(), {
+      const aVaultLpMint: RawMint = MintLayout.decode(
+        new Uint8Array(aVaultLpMintAccountBuffer.data)
+      );
+      const bVaultLpMint: RawMint = MintLayout.decode(
+        new Uint8Array(bVaultLpMintAccountBuffer.data)
+      );
+
+      poolInfoAccountsMap.set(poolsToFetch[i / 7].toBase58(), {
         aVault,
         bVault,
         aVaultLp,
         bVaultLp,
+        aVaultLpMint,
+        bVaultLpMint,
         poolLpMint,
-      });
-    }
-
-    const vaultLpToFetch = Array.from(poolInfoAccountsMap.values()).flatMap(
-      ({ aVault, bVault }) => [aVault.lpMint, bVault.lpMint]
-    );
-
-    const vaultLpAccounts = await connection.getMultipleAccountsInfo(
-      vaultLpToFetch
-    );
-
-    const vaultLpMintMap = new Map<
-      string,
-      {
-        aVaultLpMint: RawMint;
-        bVaultLpMint: RawMint;
-      }
-    >();
-    for (let i = 0; i < vaultLpAccounts.length; i += 2) {
-      const [aVaultLpMintAccount, bVaultLpMintAccount] = vaultLpAccounts.slice(
-        i,
-        i + 2
-      );
-      const aVaultLpMintState: RawMint = MintLayout.decode(
-        new Uint8Array(aVaultLpMintAccount.data)
-      );
-      const bVaultLpMintState: RawMint = MintLayout.decode(
-        new Uint8Array(bVaultLpMintAccount.data)
-      );
-      vaultLpMintMap.set(poolsToFetch[i / 2].toBase58(), {
-        aVaultLpMint: aVaultLpMintState,
-        bVaultLpMint: bVaultLpMintState,
       });
     }
 
@@ -1396,7 +1425,6 @@ export class StakeForFee {
       const stakeEscrow = stakeEscrowMap.get(pool.toBase58());
       const lockEscrow = lockEscrowAccounts.get(feeVault.lockEscrow.toBase58());
       const poolInfoAccounts = poolInfoAccountsMap.get(pool.toBase58());
-      const vaultLpMint = vaultLpMintMap.get(pool.toBase58());
       const [releasedFeeA, releasedFeeB] = StakeForFee.getFarmReleasedFees({
         feeVault,
         clock: clockState,
@@ -1405,8 +1433,8 @@ export class StakeForFee {
         bVault: poolInfoAccounts.bVault,
         aVaultLp: poolInfoAccounts.aVaultLp,
         bVaultLp: poolInfoAccounts.bVaultLp,
-        aVaultLpMint: vaultLpMint.aVaultLpMint,
-        bVaultLpMint: vaultLpMint.bVaultLpMint,
+        aVaultLpMint: poolInfoAccounts.aVaultLpMint,
+        bVaultLpMint: poolInfoAccounts.bVaultLpMint,
         poolLpMint: poolInfoAccounts.poolLpMint,
       });
 
@@ -1452,7 +1480,6 @@ export class StakeForFee {
         .map(({ account }) => account);
       const unclaimFee = unclaimFeeMap.get(vault.pool.toBase58());
       const poolInfoAccounts = poolInfoAccountsMap.get(vault.pool.toBase58());
-      const vaultLpMint = vaultLpMintMap.get(vault.pool.toBase58());
 
       return {
         stake: stake.account,
@@ -1460,7 +1487,6 @@ export class StakeForFee {
         unstake,
         unclaimFee,
         poolInfoAccounts,
-        vaultLpMint,
       };
     });
   }
