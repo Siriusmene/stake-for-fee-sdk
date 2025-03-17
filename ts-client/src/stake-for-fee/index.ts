@@ -1265,12 +1265,6 @@ export class StakeForFee {
       }
     });
 
-    const vaultWithNonPdaBasedLpMintsArray = Array.from(
-      VAULT_WITH_NON_PDA_BASED_LP_MINTS.values()
-    );
-    const vaultLpMintsToFetch = vaultWithNonPdaBasedLpMintsArray.map(
-      (mint) => new PublicKey(mint)
-    );
     const chunkedAccountToFetch = chunks(
       [SYSVAR_CLOCK_PUBKEY, ...poolsToFetch, ...lockEscrowToFetch],
       100
