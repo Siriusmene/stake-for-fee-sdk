@@ -62,11 +62,9 @@ import {
   LockEscrow,
   StakeEscrow,
   StakeForFeeProgram,
-  StakerMetadata,
   TopStakerListState,
 } from "./types";
-import { computeUnitIx, unwrapSOLInstruction } from "./helpers/tx";
-import { getSimulationComputeUnits } from "@solana-developers/helpers";
+import { unwrapSOLInstruction } from "./helpers/tx";
 import { getEstimatedComputeUnitIxWithBuffer } from "./helpers/compute";
 
 type Opt = {
@@ -1244,16 +1242,16 @@ export class StakeForFee {
     const lockEscrowToFetch: PublicKey[] = [];
     stakeEscrows.forEach(({ account }, index) => {
       const { inTopList, vault, feeAPending, feeBPending } = account;
+      const vaultAcc = vaults[index];
       if (!inTopList) {
-        unclaimFeeMap.set(vault.toBase58(), {
+        unclaimFeeMap.set(vaultAcc.pool.toBase58(), {
           feeA: feeAPending,
           feeB: feeBPending,
         });
       } else {
-        const vault = vaults[index];
-        stakeEscrowMap.set(vault.pool.toBase58(), account);
-        poolsToFetch.push(vault.pool);
-        lockEscrowToFetch.push(vault.lockEscrow);
+        stakeEscrowMap.set(vaultAcc.pool.toBase58(), account);
+        poolsToFetch.push(vaultAcc.pool);
+        lockEscrowToFetch.push(vaultAcc.lockEscrow);
       }
     });
 
@@ -1265,11 +1263,6 @@ export class StakeForFee {
 
     const clockAccountBuffer = accounts[0];
     const poolAccountsBuffer = accounts.slice(1, poolsToFetch.length + 1);
-    console.log(
-      "🚀 ~ StakeForFee ~ poolAccountsBuffer:",
-      poolAccountsBuffer.length,
-      poolsToFetch.length
-    );
     const lockEscrowAccountsBuffer = accounts.slice(
       poolsToFetch.length + 1,
       poolsToFetch.length + lockEscrowToFetch.length + 1
@@ -1307,12 +1300,10 @@ export class StakeForFee {
         lpMint,
       ]
     );
-    console.log("🚀 ~ StakeForFee ~ poolAccountsToFetch:", poolAccountsToFetch);
 
     const poolLpAccounts = await connection.getMultipleAccountsInfo(
       poolAccountsToFetch
     );
-    console.log("🚀 ~ StakeForFee ~ poolLpAccounts:", poolLpAccounts);
     const dynamicVaultProgram = createDynamicVaultProgram(
       connection,
       opt?.dynamicVaultProgramId ?? DYNAMIC_VAULT_PROGRAM_ID
@@ -1365,21 +1356,47 @@ export class StakeForFee {
         poolLpMint,
       });
     }
-    console.log(
-      "🚀 ~ StakeForFee ~ poolInfoAccountsMap.set ~ poolInfoAccountsMap:",
-      poolInfoAccountsMap
+
+    const vaultLpToFetch = Array.from(poolInfoAccountsMap.values()).flatMap(
+      ({ aVault, bVault }) => [aVault.lpMint, bVault.lpMint]
     );
 
+    const vaultLpAccounts = await connection.getMultipleAccountsInfo(
+      vaultLpToFetch
+    );
+
+    const vaultLpMintMap = new Map<
+      string,
+      {
+        aVaultLpMint: RawMint;
+        bVaultLpMint: RawMint;
+      }
+    >();
+    for (let i = 0; i < vaultLpAccounts.length; i += 2) {
+      const [aVaultLpMintAccount, bVaultLpMintAccount] = vaultLpAccounts.slice(
+        i,
+        i + 2
+      );
+      const aVaultLpMintState: RawMint = MintLayout.decode(
+        new Uint8Array(aVaultLpMintAccount.data)
+      );
+      const bVaultLpMintState: RawMint = MintLayout.decode(
+        new Uint8Array(bVaultLpMintAccount.data)
+      );
+      vaultLpMintMap.set(poolsToFetch[i / 2].toBase58(), {
+        aVaultLpMint: aVaultLpMintState,
+        bVaultLpMint: bVaultLpMintState,
+      });
+    }
+
     poolsToFetch.forEach((pool) => {
-      const feeVault = vaults.find(({ pool }) => pool.equals(pool));
+      const feeVault = vaults.find(
+        ({ pool: vaultPool }) => vaultPool.toBase58() === pool.toBase58()
+      );
       const stakeEscrow = stakeEscrowMap.get(pool.toBase58());
       const lockEscrow = lockEscrowAccounts.get(feeVault.lockEscrow.toBase58());
       const poolInfoAccounts = poolInfoAccountsMap.get(pool.toBase58());
-      console.log(
-        "🚀 ~ StakeForFee ~ poolsToFetch.forEach ~ poolInfoAccounts:",
-        pool.toBase58(),
-        poolInfoAccounts
-      );
+      const vaultLpMint = vaultLpMintMap.get(pool.toBase58());
       const [releasedFeeA, releasedFeeB] = StakeForFee.getFarmReleasedFees({
         feeVault,
         clock: clockState,
@@ -1388,8 +1405,8 @@ export class StakeForFee {
         bVault: poolInfoAccounts.bVault,
         aVaultLp: poolInfoAccounts.aVaultLp,
         bVaultLp: poolInfoAccounts.bVaultLp,
-        aVaultLpMint: poolInfoAccounts.poolLpMint,
-        bVaultLpMint: poolInfoAccounts.poolLpMint,
+        aVaultLpMint: vaultLpMint.aVaultLpMint,
+        bVaultLpMint: vaultLpMint.bVaultLpMint,
         poolLpMint: poolInfoAccounts.poolLpMint,
       });
 
@@ -1416,12 +1433,12 @@ export class StakeForFee {
       const newFeeA = newCumulativeFeeAPerLiquidity
         .sub(stakeEscrow.feeAPerLiquidityCheckpoint)
         .mul(stakeEscrow.stakeAmount)
-        .shrn(64);
+        .ushrn(64);
 
       const newFeeB = newCumulativeFeeBPerLiquidity
         .sub(stakeEscrow.feeBPerLiquidityCheckpoint)
         .mul(stakeEscrow.stakeAmount)
-        .shrn(64);
+        .ushrn(64);
       unclaimFeeMap.set(pool.toBase58(), {
         feeA: newFeeA,
         feeB: newFeeB,
@@ -1434,7 +1451,17 @@ export class StakeForFee {
         .filter(({ account }) => account.stakeEscrow.equals(stake.publicKey))
         .map(({ account }) => account);
       const unclaimFee = unclaimFeeMap.get(vault.pool.toBase58());
-      return { stake: stake.account, vault, unstake, unclaimFee };
+      const poolInfoAccounts = poolInfoAccountsMap.get(vault.pool.toBase58());
+      const vaultLpMint = vaultLpMintMap.get(vault.pool.toBase58());
+
+      return {
+        stake: stake.account,
+        vault,
+        unstake,
+        unclaimFee,
+        poolInfoAccounts,
+        vaultLpMint,
+      };
     });
   }
 
@@ -1684,12 +1711,12 @@ export class StakeForFee {
     const newFeeA = newCumulativeFeeAPerLiquidity
       .sub(stakeEscrow.feeAPerLiquidityCheckpoint)
       .mul(stakeEscrow.stakeAmount)
-      .shrn(64);
+      .ushrn(64);
 
     const newFeeB = newCumulativeFeeBPerLiquidity
       .sub(stakeEscrow.feeBPerLiquidityCheckpoint)
       .mul(stakeEscrow.stakeAmount)
-      .shrn(64);
+      .ushrn(64);
 
     return {
       stakeEscrow,
@@ -1737,12 +1764,12 @@ export class StakeForFee {
     const newFeeA = newCumulativeFeeAPerLiquidity
       .sub(stakeEscrow.feeAPerLiquidityCheckpoint)
       .mul(stakeEscrow.stakeAmount)
-      .shrn(64);
+      .ushrn(64);
 
     const newFeeB = newCumulativeFeeBPerLiquidity
       .sub(stakeEscrow.feeBPerLiquidityCheckpoint)
       .mul(stakeEscrow.stakeAmount)
-      .shrn(64);
+      .ushrn(64);
 
     return [
       newFeeA.add(stakeEscrow.feeAPending),
