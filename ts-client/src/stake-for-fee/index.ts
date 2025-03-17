@@ -1337,7 +1337,6 @@ export class StakeForFee {
       ),
       100
     );
-    console.log('🚀 ~ StakeForFee ~ poolAccountsToFetch:', poolAccountsToFetch);
 
     const poolLpAccounts = (
       await Promise.all(
@@ -1346,7 +1345,6 @@ export class StakeForFee {
         )
       )
     ).flat();
-    console.log('🚀 ~ StakeForFee ~ poolLpAccounts:', poolLpAccounts);
     const poolInfoAccountsMap = new Map<
       string,
       {
@@ -1468,8 +1466,8 @@ export class StakeForFee {
         .mul(stakeEscrow.stakeAmount)
         .ushrn(64);
       unclaimFeeMap.set(pool.toBase58(), {
-        feeA: newFeeA,
-        feeB: newFeeB,
+        feeA: newFeeA.add(stakeEscrow.feeAPending),
+        feeB: newFeeB.add(stakeEscrow.feeBPending),
       });
     });
 
