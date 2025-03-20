@@ -1361,15 +1361,6 @@ export class StakeForFee {
         bVaultLpMintAccountBuffer,
         lpMintAccountBuffer,
       ] = poolLpAccounts.slice(i, i + 7);
-      console.log([
-        aVaultAccountBuffer,
-        aVaultLpAccountBuffer,
-        aVaultLpMintAccountBuffer,
-        bVaultAccountBuffer,
-        bVaultLpAccountBuffer,
-        bVaultLpMintAccountBuffer,
-        lpMintAccountBuffer,
-      ]);
       const aVault: DynamicVault = dynamicVaultProgram.coder.accounts.decode(
         "vault",
         aVaultAccountBuffer.data
