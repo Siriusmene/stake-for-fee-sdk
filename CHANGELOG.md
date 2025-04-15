@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## @meteora-ag/stake-for-fee [1.0.9] (PR #33)(https://github.com/MeteoraAg/stake-for-fee-sdk/pull/33)
+
+### Fixed
+
+- Move `@mercurial-finance/dynamic-amm-sdk` from a dev dependency to a regular dependency.
+
 ## common [0.0.1] (PR #28)(https://github.com/MeteoraAg/stake-for-fee-sdk/pull/28)
 
 - PDA helper to derive accounts
