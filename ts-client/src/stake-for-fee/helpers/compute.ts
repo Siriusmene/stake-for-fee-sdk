@@ -8,6 +8,7 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js";
+import { MAX_COMPUTE_UNITS } from "../constants";
 
 export const getSimulationComputeUnits = async (
   connection: Connection,
@@ -20,7 +21,7 @@ export const getSimulationComputeUnits = async (
     // Set an arbitrarily high number in simulation
     // so we can be sure the transaction will succeed
     // and get the real compute units used
-    ComputeBudgetProgram.setComputeUnitLimit({ units: 1_400_000 }),
+    ComputeBudgetProgram.setComputeUnitLimit({ units: MAX_COMPUTE_UNITS }),
     ...instructions,
   ];
 
@@ -82,7 +83,10 @@ export const getEstimatedComputeUnitUsageWithBuffer = async (
 
   const extraComputeUnitBuffer = estimatedComputeUnitUsage * buffer;
 
-  return estimatedComputeUnitUsage + extraComputeUnitBuffer;
+  return Math.min(
+    estimatedComputeUnitUsage + extraComputeUnitBuffer,
+    MAX_COMPUTE_UNITS
+  );
 };
 
 /**
@@ -107,7 +111,7 @@ export const getEstimatedComputeUnitIxWithBuffer = async (
     buffer
   ).catch((error) => {
     console.error("Error::getEstimatedComputeUnitUsageWithBuffer", error);
-    return 400_000;
+    return MAX_COMPUTE_UNITS;
   });
 
   return ComputeBudgetProgram.setComputeUnitLimit({ units });

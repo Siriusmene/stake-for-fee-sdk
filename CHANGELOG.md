@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## @meteora-ag/stake-for-fee [1.0.10] (PR #35)(https://github.com/MeteoraAg/stake-for-fee-sdk/pull/35)
+
+### Fixed
+
+- Remove `@solana-developers/helpers` dep & replace `@mercurial-finance/dynamic-amm-sdk` with `@meteora-ag/dynamic-amm-sdk`
+
 ## @meteora-ag/stake-for-fee [1.0.9] (PR #33)(https://github.com/MeteoraAg/stake-for-fee-sdk/pull/33)
 
 ### Fixed
