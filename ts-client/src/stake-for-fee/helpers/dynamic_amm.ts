@@ -13,6 +13,12 @@ import {
 import { RawAccount, RawMint } from "@solana/spl-token";
 import Decimal from "decimal.js";
 
+export function chunks<T>(array: T[], size: number): T[][] {
+  return Array.apply(0, new Array(Math.ceil(array.length / size))).map(
+    (_, index) => array.slice(index * size, (index + 1) * size)
+  );
+}
+
 export function getTokenBalances(
   currentTime: BN,
   aVault: DynamicVault,

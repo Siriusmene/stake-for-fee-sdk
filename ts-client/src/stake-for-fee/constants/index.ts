@@ -1,6 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "bn.js";
 
+export const MAX_COMPUTE_UNITS = 1_400_000;
+
 export const STAKE_FOR_FEE_PROGRAM_ID = new PublicKey(
   "FEESngU3neckdwib9X3KWqdL7Mjmqk9XNp3uh5JbP4KP"
 );

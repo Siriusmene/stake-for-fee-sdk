@@ -1,4 +1,4 @@
-import AmmImpl from "@mercurial-finance/dynamic-amm-sdk";
+import AmmImpl from "@meteora-ag/dynamic-amm-sdk";
 import { NATIVE_MINT } from "@solana/spl-token";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
@@ -116,10 +116,13 @@ async function createPoolAndInteractWithFeeVaultExample() {
     keypair.publicKey,
     new BN(U64_MAX)
   );
-  for (const [index, tx] of claimFeeTx.entries()) {
-    const signature = await handleSendTransaction(connection, tx, keypair);
-    console.log(`Claim Fee Signature ${index + 1}`, signature);
-  }
+
+  const signature = await handleSendTransaction(
+    connection,
+    claimFeeTx,
+    keypair
+  );
+  console.log(`Claim Fee Signature`, signature);
 
   console.log("8. Unstake");
   const unstakeKeyPair = new Keypair();
