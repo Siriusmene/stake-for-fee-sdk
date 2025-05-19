@@ -28,7 +28,7 @@ import {
   decodeFullBalanceState,
   decodeTopStakerListState,
 } from "./helpers/decoder";
-import { getLockedEscrowPendingFee } from "./helpers/dynamic_amm";
+import { chunks, getLockedEscrowPendingFee } from "./helpers/dynamic_amm";
 import {
   deriveFeeVault,
   deriveFullBalanceList,
@@ -67,7 +67,6 @@ import {
 } from "./types";
 import { unwrapSOLInstruction } from "./helpers/tx";
 import { getEstimatedComputeUnitIxWithBuffer } from "./helpers/compute";
-import { chunks } from "@mercurial-finance/dynamic-amm-sdk/dist/cjs/src/amm/utils";
 
 type Opt = {
   stakeForFeeProgramId?: PublicKey;

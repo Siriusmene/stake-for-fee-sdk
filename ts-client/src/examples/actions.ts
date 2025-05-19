@@ -1,10 +1,10 @@
-import AmmImpl from "@mercurial-finance/dynamic-amm-sdk";
+import AmmImpl from "@meteora-ag/dynamic-amm-sdk";
 import {
   DYNAMIC_AMM_PROGRAM_ID,
   STAKE_FOR_FEE_PROGRAM_ID,
 } from "../stake-for-fee/constants";
 import { deriveFeeVault } from "../stake-for-fee/helpers";
-import { derivePoolAddressWithConfig } from "@mercurial-finance/dynamic-amm-sdk/dist/cjs/src/amm/utils";
+import { derivePoolAddressWithConfig } from "@meteora-ag/dynamic-amm-sdk/dist/cjs/src/amm/utils";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { DEVNET_URL, handleSendTransaction } from "./utils";
